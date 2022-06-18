@@ -1,0 +1,4 @@
+local t = gui:FindFirstChildOfClass("TextBox")
+t:GetPropertyChangedSignal("Text"):Connect(function()
+
+end)
