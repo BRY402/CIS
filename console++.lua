@@ -16,7 +16,7 @@ end
 
 function importable:bring(name)
 local plr = importable.gp(name)
-if plr.Character then
+if plr and plr.Character then
 plr.Character:MoveTo(owner.Character.HumanoidRootPart.Position)
 end
 end
