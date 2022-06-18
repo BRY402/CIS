@@ -10,12 +10,12 @@ end
 end
 
 function importable:gpa(name)
-local plr = gp(name)
+local plr = importable.gp(name)
 return (plr.AccountAge / 30) / 12
 end
 
 function importable:bring(name)
-local plr = gp(name)
+local plr = importable.gp(name)
 if plr.Character then
 plr.Character:MoveTo(owner.Character.HumanoidRootPart.Position)
 end
