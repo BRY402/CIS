@@ -5,7 +5,6 @@ if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
 return v
 end
 end
-return nil
 end
 
 function importable:gpa(name)
