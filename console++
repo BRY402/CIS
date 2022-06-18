@@ -1,4 +1,7 @@
-local t = gui:FindFirstChildOfClass("TextBox")
-t:GetPropertyChangedSignal("Text"):Connect(function()
-
-end)
+function gpa(name)
+for i,v in pairs(game.Players:GetPlayers()) do
+if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
+return (v.AccountAge / 30) / 12
+end
+end
+end
