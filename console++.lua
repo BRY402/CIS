@@ -3,10 +3,9 @@ function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
 return v
-else
+end
+end
 return nil
-end
-end
 end
 
 function importable:gpa(name)
@@ -16,7 +15,7 @@ end
 
 function importable:bring(name)
 local plr = importable.gp(name)
-if plr and plr.Character then
+if plr.Character then
 plr.Character:MoveTo(owner.Character.HumanoidRootPart.Position)
 end
 end
