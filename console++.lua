@@ -1,4 +1,5 @@
-function gp(name)
+local importable = {}
+function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
 return v
@@ -8,16 +9,16 @@ end
 end
 end
 
-function gpa(name)
+function importable:gpa(name)
 local plr = gp(name)
 return (plr.AccountAge / 30) / 12
 end
 
-function bring(name)
+function importable:bring(name)
 local plr = gp(name)
 if plr.Character then
 plr.Character:MoveTo(owner.Character.HumanoidRootPart.Position)
 end
 end
 
-return "Console++"
+return "Console++",importable
