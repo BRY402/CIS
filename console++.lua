@@ -1,4 +1,4 @@
-local importable = {addtofired = [[local result = tab[1] result = string.gsub(result,"end","<font color='rgb(255,0,0)'> end </font>")
+local importable = {addtofired = [[local result = src result = string.gsub(result,"end","<font color='rgb(255,0,0)'> end </font>")
 t2.Text = string.gsub(result,"local","<font color='rgb(255,0,0)'> local </font>") t2.Text = 
 string.gsub(result,"function","<font color='rgb(255,0,0)'> function </font>")]]}
 function importable.gp(name)
