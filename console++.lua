@@ -1,14 +1,6 @@
-local function highlight()
-local addtofired = ""
-local keywordsred = {"end","function","local"}
-for i,v in pairs(keywordsred) do
-if v ~= "<font color='rgb(255,0,0)'> "..v.." </font>" then
-addtofired ..= [[string.gsub(tab[1],v,"<font color='rgb(255,0,0)'> "..v.." </font>")]]
-end
-end
-return addtofired
-end
-local importable = {addtofired = highlight()}
+local importable = {addtofired = [[string.gsub(tab[1],"end","<font color='rgb(255,0,0)'> end </font>
+string.gsub(tab[1],"local","<font color='rgb(255,0,0)'> local </font>
+string.gsub(tab[1],"function","<font color='rgb(255,0,0)'> function </font>")]]}
 function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
