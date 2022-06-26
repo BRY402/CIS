@@ -1,6 +1,6 @@
 local function highlight()
 local addtofired = ""
-keywordsred = {"end","function","local"},
+local keywordsred = {"end","function","local"}
 for i,v in pairs(keywordsred) do
 addtofired ..= [[string.gsub(t2.Text,v,"<font color='rgb(255,0,0)'> "..v.." </font>)\n]]
 end
