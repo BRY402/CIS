@@ -1,4 +1,12 @@
-local importable = {}
+local function highlight()
+local addtofired = ""
+keywordsred = {"end","function","local"},
+for i,v in pairs(keywordsred) do
+addtofired ..= [[string.gsub(t2.Text,v,"<font color='rgb(255,0,0)'> "..v.." </font>)\n]]
+end
+return addtofired
+end
+local importable = {highlight()}
 function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
