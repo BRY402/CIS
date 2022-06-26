@@ -6,7 +6,7 @@ addtofired ..= [[string.gsub(t2.Text,v,"<font color='rgb(255,0,0)'> "..v.." </fo
 end
 return addtofired
 end
-local importable = {highlight()}
+local importable = {addtofired = highlight()}
 function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
