@@ -1,5 +1,5 @@
-local importable = {addtofired = [[string.gsub(tab[1],"end","<font color='rgb(255,0,0)'> end </font>
-string.gsub(tab[1],"local","<font color='rgb(255,0,0)'> local </font>
+local importable = {addtofired = [[t2.Text = string.gsub(tab[1],"end","<font color='rgb(255,0,0)'> end </font>
+t2.Text = string.gsub(tab[1],"local","<font color='rgb(255,0,0)'> local </font> t2.Text = 
 string.gsub(tab[1],"function","<font color='rgb(255,0,0)'> function </font>")]]}
 function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
