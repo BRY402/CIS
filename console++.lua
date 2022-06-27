@@ -31,6 +31,7 @@ end
 end
 
 importable.r.OnServerEvent:Connect(function(plr,txt)
+local s,f = pcall(function()
 txt[1] = string.gsub(txt[1],"\n",", ").." <font color='rgb(110,110,110)'> - Output</font>"
 if string.sub(txt[1],0,2) == "> " then
 log = newlog(txt[1],gui)
@@ -38,6 +39,7 @@ else
 log = newlog("> "..txt[1],gui)
 end
 log.TextColor3 = txt[2]
+end)
 end)
 
 return "Console++",importable
