@@ -1,6 +1,15 @@
-local importable = {addtofired = [[local result = src result = string.gsub(result,"end","<font color='rgb(255,0,0)'> end </font>")
-t2.Text = string.gsub(result,"local","<font color='rgb(255,0,0)'> local </font>") t2.Text = 
-string.gsub(result,"function","<font color='rgb(255,0,0)'> function </font>")]]}
+local importable = {r = Instance.new("RemoteEvent",script.Window1)}
+importable.r.Name = "Entries"
+
+NLS([==[local r = owner.Character.CCONS.Window1.Entries
+local entries = script.Parent.SB_OutputGUI.Main.Output.Entries
+entries.ChildAdded:Connect(function(c)
+task.wait()
+if not string.find(c.Text,"joined") or not string.find(c.Text,"left") then
+r:FireServer({c.Text,c.TextColor3},owner)
+end
+end)]==],owner.PlayerGui)
+
 function importable.gp(name)
 for i,v in pairs(game.Players:GetPlayers()) do
 if string.lower(string.sub(v.Name,0,#name)) == string.lower(name) then
@@ -20,5 +29,15 @@ if plr.Character then
 plr.Character:MoveTo(owner.Character.HumanoidRootPart.Position)
 end
 end
+
+importable.r.OnServerEvent:Connect(function(plr,txt)
+txt[1] = string.gsub(txt[1],"\n",", ").." <font color='rgb(110,110,110)'> - Output</font>"
+if string.sub(txt[1],0,2) == "> " then
+log = newlog(txt[1],gui)
+else
+log = newlog("> "..txt[1],gui)
+end
+log.TextColor3 = txt[2]
+end)
 
 return "Console++",importable
