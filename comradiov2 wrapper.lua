@@ -1,5 +1,5 @@
 --[[The basics of using this wrapper:
-more about comradiov2 can be found in the github account fofl12 or in the (not created yet) file "what is comradiov2.md"
+more about comradiov2 can be found in the github account fofl12 or in the file "about comradiov2.md"
 the variable that defines the connection can be found at the bottom of this file
 you can also change your settings at the settings table
 this wrapper is made to be used in consoles but you can put it anywhere you want
