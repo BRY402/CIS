@@ -5,6 +5,8 @@ you can also change your settings at the settings table
 this wrapper is made to be used in consoles but you can put it anywhere you want
 i also recommend you don't use my log system as its garbage if you have your own
 you can better this if you want i don't really care i'm not watching you anyway
+current problems for me:
+no image or sound support
 
 connection commands you can use:
 Connection:Roster() sends a roster request on the current channel
