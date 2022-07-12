@@ -1,11 +1,9 @@
 # About comradiov2.
-## So you might be asking yourself, what is comradiov2 exactly? And i'm here to answer it.
 
 comradiov2 AKA comradio is a way of communicating (other than global chat) between servers in a ROBLOX game currently known as Void script builder / Oxcool1's script builder.
-> What can i do with it exactly and how do i use it?
+> How do i use it?
 
-About that i recommend read this [documentation about this protocol,](https://github.com/fofl12/comradio/blob/main/comradio2.md)
-here are some things you can do with comradio:
+About that i recommend read this [documentation about the protocol,](https://github.com/fofl12/comradio/blob/main/comradio2.md) here are some things you can do with comradio:
 - Rosters
 - Pings
 - Messaging
