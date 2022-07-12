@@ -26,7 +26,8 @@ local settings = {maximumlogamount = 10,
   id = owner.UserId, -- this is only if you're creating a connection on startup
   textsize = 30,
   font = Enum.Font.Code,
-  fontsize = 12.75
+  fontsize = 12.75,
+  logoutput = gui instance here
   }
 
 local deb = game:GetService("Debris")
@@ -112,19 +113,19 @@ pcall(function()
 local mr = http:JSONDecode(msg.Data)
 if mr.Type == "text" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Content),crgui)
+newlog("["..name.."]: "..filter(mr.Content),settings.logoutput)
 elseif mr.Type == "sound" or mr.Type == "image" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",crgui)
+newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",settings.logoutput)
 elseif mr.Type == "welcome" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has joined the channel. ()",crgui)
+newlog(name.." has joined the channel. ()",settings.logoutput)
 elseif mr.Type == "status" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has changed their status: "..filter(mr.Comment),crgui)
+newlog(name.." has changed their status: "..filter(mr.Comment),settings.logoutput)
 elseif mr.Type == "ping" then
 local name = gn(mr.Nickname,mr.Author)
-local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),crgui)
+local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),settings.logoutput)
 if mr.Content == userid then
 log.BackgroundTransparency = .6
 log.BackgroundColor3 = Color3.new(1,1,0)
@@ -139,14 +140,14 @@ else
 rosters.checking = false
 end
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster request from "..name,crgui)
+newlog("Roster request from "..name,settings.logoutput)
 ms:PublishAsync("comradio:",http:JSONEncode({
 	Type = "rosterResponse",
 	Content = owner.Name,
 	Author = owner.UserId}))
 elseif mr.Type == "rosterResponse" and rosters.checking then
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster response: "..name,crgui)
+newlog("Roster response: "..name,settings.logoutput)
 end
 end)
 end)}
@@ -191,19 +192,19 @@ pcall(function()
 local mr = game:GetService("HttpService"):JSONDecode(msg.Data)
 if mr.Type == "text" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Content),crgui)
+newlog("["..name.."]: "..filter(mr.Content),settings.logoutput)
 elseif mr.Type == "sound" or mr.Type == "image" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",crgui)
+newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",settings.logoutput)
 elseif mr.Type == "welcome" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has joined the channel. ("..self.channel..")",crgui)
+newlog(name.." has joined the channel. ("..self.channel..")",settings.logoutput)
 elseif mr.Type == "status" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has changed their status: "..filter(mr.Comment),crgui)
+newlog(name.." has changed their status: "..filter(mr.Comment),settings.logoutput)
 elseif mr.Type == "ping" then
 local name = gn(mr.Nickname,mr.Author)
-local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),crgui)
+local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),settings.logoutput)
 if mr.Content == self.id then
 log.BackgroundTransparency = .6
 log.BackgroundColor3 = Color3.new(1,1,0)
@@ -218,11 +219,11 @@ else
 rosters.checking = false
 end
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster request from "..name,crgui)
+newlog("Roster request from "..name,settings.logoutput)
 connection:Respond()
 elseif mr.Type == "rosterResponse" and rosters.checking then
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster response: "..name,crgui)
+newlog("Roster response: "..name,settings.logoutput)
 end
 end)
 end)
@@ -235,19 +236,19 @@ pcall(function()
 local mr = self:Decode(msg.Data)
 if mr.Type == "text" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Content),crgui)
+newlog("["..name.."]: "..filter(mr.Content),settings.logoutput)
 elseif mr.Type == "sound" or mr.Type == "image" then
 local name = gn(mr.Nickname,mr.Author)
-newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",crgui)
+newlog("["..name.."]: "..filter(mr.Comment).." (Id: "..string.sub(mr.Content,#"rbxassetid://" + 1,#mr.Content)..")",settings.logoutput)
 elseif mr.Type == "welcome" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has joined the channel. ("..self.channel..")",crgui)
+newlog(name.." has joined the channel. ("..self.channel..")",settings.logoutput)
 elseif mr.Type == "status" then
 local name = gn(mr.Nickname,mr.Author)
-newlog(name.." has changed their status: "..filter(mr.Comment),crgui)
+newlog(name.." has changed their status: "..filter(mr.Comment),settings.logoutput)
 elseif mr.Type == "ping" then
 local name = gn(mr.Nickname,mr.Author)
-local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),crgui)
+local log = newlog("["..name.." (Ping)]: "..filter(mr.Comment),settings.logoutput)
 if mr.Content == self.id then
 log.BackgroundTransparency = .6
 log.BackgroundColor3 = Color3.new(1,1,0)
@@ -262,11 +263,11 @@ else
 rosters.checking = false
 end
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster request from "..name,crgui)
+newlog("Roster request from "..name,settings.logoutput)
 connection:Respond()
 elseif mr.Type == "rosterResponse" and rosters.checking then
 local name = gn(mr.Nickname,mr.Author)
-newlog("Roster response: "..name,crgui)
+newlog("Roster response: "..name,settings.logoutput)
 end
 end)
 end)
@@ -312,5 +313,5 @@ self.nick = nn
 end
 return connection
 end
-newlog("Made connection as "..game:GetService("Players"):GetNameFromUserIdAsync(settings.id)..". (variable: User)",crgui)
+newlog("Made connection as "..game:GetService("Players"):GetNameFromUserIdAsync(settings.id)..". (variable: User)",settings.logoutput)
 local User = cr:MakeConnection(settings.id,settings.nickname)
