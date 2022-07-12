@@ -14,10 +14,10 @@ Before continuing to read this i really recommend you go check out [fofl12's](ht
 
 And, in case you didn't understand fofl12's documentation, i made a wrapper for it that you can check out <here> i can't really explain how it works because i'm not a teacher.
   You can also use these commands:
-  ´´´
+  ```
   Connection:Roster()
   Connection:Chat()
   Connection:SetStatus()
   Connection:SetChannel()
   Connection:SetNickname()
-  ´´´
+  ```
