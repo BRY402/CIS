@@ -11,7 +11,7 @@ About that i recommend read this [documentation about the protocol,](https://git
 - Channels
 - Nicknames
 
-And, in case you didn't understand fofl12's documentation, i made a wrapper for it that you can check out <here> i can't really explain how it works because i'm not a teacher.
+And, in case you didn't understand fofl12's documentation, i made a wrapper for it that you can check out [here](docs/comradiov2 wrapper.lua) i can't really explain how it works because i'm not a teacher.
   You can also use these commands:
   ```
   Connection:Roster()
