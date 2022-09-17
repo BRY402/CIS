@@ -1,4 +1,4 @@
--- this is very simple and probably bypasseable (with out of sandbox code) so if you for some reason use it and find a bypass to this script pls tell me i beg u
+c/-- this is very simple and probably bypasseable (with out of sandbox code) so if you for some reason use it and find a bypass to this script pls tell me i beg u
 local http = game:GetService("HttpService")
 local __Locals = {}
 local onls = NLS
@@ -31,7 +31,8 @@ sct.Loaded = true
 -- actions remote
 local ar = Instance.new("RemoteFunction",sct.Script)
 ar.Name = "ActionsRemote"
-ar.OnServerInvoke = function(at)
+ar.OnServerInvoke = function(plr,at)
+if plr == owner then
 if at == "GetBans" then
 local list = game:GetBans()
 for i,v in pairs(list) do
@@ -42,6 +43,7 @@ end
 return http:JSONEncode(list)
 elseif at == "Rscript" then
 return Data.Rscript or script
+end
 end
 end
 -- execution for nls
@@ -61,4 +63,3 @@ end
 table.insert(__Locals,sct)
 return sct.Script
 end
-return NLS,__Locals
