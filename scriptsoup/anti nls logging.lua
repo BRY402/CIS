@@ -3,13 +3,13 @@ local http = game:GetService("HttpService")
 local __Locals = {}
 local onls = NLS
 local id = 0
-local extrasrc = [==[local rscript = script.Rscript.Value
-local ar = script:WaitForChild("ActionsRemote")
+local extrasrc = [==[local ar = script:WaitForChild("ActionsRemote")
 local http = game:GetService("HttpService")
 local function getbans()
 local banlist = http:JSONDecode(ar:InvokeServer("GetBans"))
 return banlist
 end
+local rscript = ar:InvokeServer("Rscript")
 local ar = nil
 local http = nil]==]
 local reasons = {"Invalid Data type, table or nil expected"}
@@ -26,9 +26,6 @@ id = id + 1
 local sct = format(src,Data.Name or nil)
 sct.Script = onls("",parent)
 sct.Script.Name = sct.Name
-local rsc = Instance.new("ObjectValue",sct.Script)
-rsc.Name = "Rscript"
-rsc.Value = Data.Rscript or script
 if sct.Script:IsA("LocalScript") and sct.Script:FindFirstChild("Source") and not sct.Loaded then
 sct.Loaded = true
 -- actions remote
@@ -43,6 +40,8 @@ list[i] = tostring(v)
 end
 end
 return http:JSONEncode(list)
+elseif at == "Rscript" then
+return Data.Rscript or script
 end
 end
 -- execution for nls
