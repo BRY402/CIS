@@ -63,3 +63,4 @@ end
 table.insert(__Locals,sct)
 return sct.Script
 end
+return NLS, __Locals
