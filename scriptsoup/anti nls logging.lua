@@ -1,4 +1,4 @@
-c/-- this is very simple and probably bypasseable (with out of sandbox code) so if you for some reason use it and find a bypass to this script pls tell me i beg u
+-- this is very simple and probably bypasseable (with out of sandbox code) so if you for some reason use it and find a bypass to this script pls tell me i beg u
 local http = game:GetService("HttpService")
 local __Locals = {}
 local onls = NLS
