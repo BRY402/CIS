@@ -19,6 +19,7 @@ local function importfstr(n : "Username",r : "Repository", b : "Branch",el : "Lo
     t = "https://github.com/"
     t2 = "blob/"
   end
+  local fn = game:GetService("HttpService"):UrlEncode(fn)
   local fstr = string.format("%s%s/%s/%s%s%s/%s.%s",t,n,r,t2,b,fn,fe)
   return fstr
 end
