@@ -24,8 +24,8 @@ local function importfstr(n : "Username",r : "Repository", b : "Branch",el : "Lo
   return fstr
 end
 local sets = {User = "BRY402"}
-local function load(n)
+local function gl(n)
 	local fn,fe = unpack(string.split(n,"."))
-	importfstr(sets.User,"random-scripts","main","scriptsoup",fn,fe or "lua",true)
+	return importfstr(sets.User,"random-scripts","main","scriptsoup",fn,fe or "lua",true)
 end
-return load
+return gl
