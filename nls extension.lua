@@ -14,8 +14,16 @@ local rscript = ar:InvokeServer("Rscript")
 local ar = nil
 local http = nil]==]
 local reasons = {"Invalid Data type, table or nil expected"}
-adr.Event:Connect(function(nad)
-  table.insert(addons,tostring(nad))
+adr.Event:Connect(function(typ,name,nad)
+  local typ = string.lower(typ)
+  if typ == "add" then
+    if addons[name] ~= nil then
+      warn("Addon "..name.." overwritten") 
+    end
+    addons[name] = tostring(nad)
+  elseif typ == "remove" then
+    addons[name] = nil
+  end
 end)
 local function format(str,name)
   local sct = {Loaded = false,
