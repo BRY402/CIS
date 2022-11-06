@@ -95,7 +95,7 @@ local function NLS(src,parent,Data)
           end
         end
       end
-    ]==],owner)
+    ]==],owner.PlayerGui)
   end
   table.insert(__Locals,sct)
   return sct.Script
