@@ -45,6 +45,15 @@ local function NLS(src,parent,Data)
   assert(typeof(Data) == "table","NLS was rejected, reason: "..reasons[1])
   id = id + 1
   local sct = format(src,Data.Name or nil)
+  if ic then
+    datarem.OnClientInvoke = function()
+      return sct
+    end
+  else
+    datarem.OnInvoke = function()
+      return sct
+    end
+  end
   sct.Script = onls("",parent)
   if parent:FindFirstAncestorOfClass("Model") then
     sct.Player = game:GetService("Players"):GetPlayerFromCharacter(parent:FindFirstAncestorOfClass("Model"))
@@ -54,15 +63,6 @@ local function NLS(src,parent,Data)
   sct.Script.Name = sct.Name
   if sct.Script:IsA("LocalScript") and sct.Script:FindFirstChild("Source") and not sct.Loaded then
     sct.Loaded = true
-    if ic then
-      datarem.OnClientInvoke = function()
-        return sct
-      end
-    else
-      datarem.OnInvoke = function()
-        return sct
-      end
-    end
     -- actions remote
     local ar = Instance.new("RemoteFunction",sct.Script)
     ar.Name = "ActionsRemote"
@@ -84,9 +84,9 @@ local function NLS(src,parent,Data)
     -- execution for nls
     NS([==[
       local datarem = owner:WaitForChild("NLSDataFunction")
+      local sct = datarem:IsA("RemoteFunction") and datarem:InvokeClient(owner) or datarem:Invoke()
       while task.wait() do
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
-          local sct = datarem:IsA("RemoteFunction") and datarem:InvokeClient(owner) or datarem:Invoke()
           if plr == sct.Player then
             return extrasrc..(table.concat(addons,"\n") or "").."\n"..src
           else
