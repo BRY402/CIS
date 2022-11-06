@@ -1,4 +1,12 @@
 -- this is a dumpster fire
+local ic = game:GetService("RunService"):IsClient()
+if ic then
+  datarem = Instance.new("RemoteFunction",owner)
+  datarem.Name = "NLSDataFunction"
+else
+  datarem = Instance.new("BindableFunction",owner)
+  datarem.Name = "NLSDataFunction"
+end
 local http = game:GetService("HttpService")
 local __Locals = {}
 local onls = NLS
@@ -38,9 +46,23 @@ local function NLS(src,parent,Data)
   id = id + 1
   local sct = format(src,Data.Name or nil)
   sct.Script = onls("",parent)
+  if parent:FindFirstAncestorOfClass("Model") then
+    sct.Player = game:GetService("Players"):GetPlayerFromCharacter(parent:FindFirstAncestorOfClass("Model"))
+  elseif parent:FindFirstAncestorOfClass("Player") then
+    sct.Player = parent:FindFirstAncestorOfClass("Player")
+  end
   sct.Script.Name = sct.Name
   if sct.Script:IsA("LocalScript") and sct.Script:FindFirstChild("Source") and not sct.Loaded then
     sct.Loaded = true
+    if ic then
+      datarem.OnClientInvoke = function()
+        return sct
+      end
+    else
+      datarem.OnInvoke = function()
+        return sct
+      end
+    end
     -- actions remote
     local ar = Instance.new("RemoteFunction",sct.Script)
     ar.Name = "ActionsRemote"
@@ -60,10 +82,12 @@ local function NLS(src,parent,Data)
       end
     end
     -- execution for nls
-    coroutine.resume(coroutine.create(function()
+    NS([==[
+      local datarem = owner:WaitForChild("NLSDataFunction")
       while task.wait() do
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
-          if plr == owner then
+          local sct = datarem:IsA("RemoteFunction") and datarem:InvokeClient(owner) or datarem:Invoke()
+          if plr == sct.Player then
             return extrasrc..(table.concat(addons,"\n") or "").."\n"..src
           else
             print(plr.." attempted to log you")
@@ -71,7 +95,7 @@ local function NLS(src,parent,Data)
           end
         end
       end
-    end))
+    ]==],owner)
   end
   table.insert(__Locals,sct)
   return sct.Script
