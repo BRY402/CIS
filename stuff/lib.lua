@@ -5,6 +5,7 @@ local function create(Class,Parent,Properties)
 		local ri
 		xpcall(function()
 			ri = Instance.new(Class,Parent)
+			ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
 		end,function(f)
 			task.wait()
 			create(Class,Parent)
