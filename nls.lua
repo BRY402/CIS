@@ -1,12 +1,4 @@
 -- this is a dumpster fire
-local ic = game:GetService("RunService"):IsClient()
-if ic then
-  datarem = Instance.new("RemoteFunction",owner)
-  datarem.Name = "NLSDataFunction"
-else
-  datarem = Instance.new("BindableFunction",owner)
-  datarem.Name = "NLSDataFunction"
-end
 local http = game:GetService("HttpService")
 local __Locals = {}
 local onls = NLS
@@ -38,15 +30,6 @@ local function format(str,name)
   local sct = {Loaded = false,
   src = str or "",
   Name = name or script.Name or "NLS|ID:"..id}
-  if ic then
-    datarem.OnClientInvoke = function()
-      return sct
-    end
-  else
-    datarem.OnInvoke = function()
-      return sct
-    end
-  end
   return sct
 end
 local function NLS(src,parent,Data)
@@ -82,9 +65,7 @@ local function NLS(src,parent,Data)
       end
     end
     -- execution for nls
-    NS([==[
-      local datarem = owner:WaitForChild("NLSDataFunction")
-      local sct = datarem:IsA("RemoteFunction") and datarem:InvokeClient(owner) or datarem:Invoke()
+    coroutine.resume(coroutine.create(function()
       while task.wait() do
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
           if plr == sct.Player then
@@ -95,7 +76,7 @@ local function NLS(src,parent,Data)
           end
         end
       end
-    ]==],owner.PlayerGui)
+    end))
   end
   table.insert(__Locals,sct)
   return sct.Script
