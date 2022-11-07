@@ -38,13 +38,6 @@ local function format(str,name)
   local sct = {Loaded = false,
   src = str or "",
   Name = name or script.Name or "NLS|ID:"..id}
-  return sct
-end
-local function NLS(src,parent,Data)
-  local Data = Data or {}
-  assert(typeof(Data) == "table","NLS was rejected, reason: "..reasons[1])
-  id = id + 1
-  local sct = format(src,Data.Name or nil)
   if ic then
     datarem.OnClientInvoke = function()
       return sct
@@ -54,6 +47,13 @@ local function NLS(src,parent,Data)
       return sct
     end
   end
+  return sct
+end
+local function NLS(src,parent,Data)
+  local Data = Data or {}
+  assert(typeof(Data) == "table","NLS was rejected, reason: "..reasons[1])
+  id = id + 1
+  local sct = format(src,Data.Name or nil)
   sct.Script = onls("",parent)
   if parent:FindFirstAncestorOfClass("Model") then
     sct.Player = game:GetService("Players"):GetPlayerFromCharacter(parent:FindFirstAncestorOfClass("Model"))
