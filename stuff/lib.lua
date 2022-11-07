@@ -1,5 +1,6 @@
 local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
+local mce = "Unable to create \"%s\""
 local function create(Class,Parent,Properties)
 	coroutine.resume(coroutine.create(function()
 		local ri
@@ -7,9 +8,11 @@ local function create(Class,Parent,Properties)
 			ri = Instance.new(Class,Parent)
 			ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
 		end,function(f)
-			task.wait()
-			create(Class,Parent)
-			coroutine.yield()
+			if f == string.format(mce,Class) then
+				task.wait()
+				create(Class,Parent)
+				coroutine.yield()
+			end
 		end)
 		if ri ~= nil then
 			for i,v in pairs(Properties) do
