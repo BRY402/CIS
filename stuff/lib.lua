@@ -49,22 +49,7 @@ Destroy = function(ins,delay)
 end,
 GetNil = function()
 	return nilinstances
-end,
-Encode = function(data,key)
-	local rdata = string.gsub(data,".",function(cc)
-		local tb = math.round(string.byte(cc) * key + (key ^ math.pi) / (key ^ string.byte(cc)))
-		return tb.."|"
-	end)
-	return string.sub(rdata,0,#rdata - 1)
-end,
-Decode = function(data,key)
-	local rdata = ""
-	table.foreach(string.split(data,"|"),function(i,cc)
-		local tb = math.round(cc / key - (key % math.pi) * (key % cc))
-		rdata = rdata..string.char(tb)
-	end)
-	return rdata
-end}
+end,}
 lib.fastSpawn = function(func,...)
 	local r = lib.Create("BindableEvent")
 	r.Event:Connect(func)
