@@ -2,7 +2,7 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local function create(Class,Parent,Properties)
-	return coroutine.resume(coroutine.wrap(function()
+	local r,ninst = coroutine.resume(coroutine.create(function()
 		local ri
 		xpcall(function()
 			ri = Instance.new(Class,Parent)
@@ -29,6 +29,7 @@ local function create(Class,Parent,Properties)
 			return ri
 		end
 	end))
+	return ninst
 end
 local lib = {Create = create,
 Random = function(min,max,seed)
