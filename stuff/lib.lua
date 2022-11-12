@@ -2,7 +2,7 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local function create(Class,Parent,Properties)
-	coroutine.resume(coroutine.create(function()
+	return coroutine.resume(coroutine.wrap(function()
 		local ri
 		xpcall(function()
 			ri = Instance.new(Class,Parent)
