@@ -2,7 +2,7 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local function create(Class,Parent,Properties)
-	return coroutine.wrap(function()
+	local r,ninst = coroutine.resume(coroutine.create(function()
 		local ri
 		xpcall(function()
 			ri = Instance.new(Class,Parent)
@@ -15,10 +15,9 @@ local function create(Class,Parent,Properties)
 			end
 		end)
 		if ri ~= nil then
-			for i,v in pairs(Properties) do
-				ri[i] = v
-				task.wait()
-			end
+			table.foreach(Properties,function(i,v)
+				ri[i] = v or ri[i]
+			end)
 			ri:GetPropertyChangedSignal("Parent"):Connect(function()
 				if ri.Parent == nil then
 					table.insert(nilinstances,ri)
@@ -28,7 +27,8 @@ local function create(Class,Parent,Properties)
 			end)
 		end
 		return ri
-	end)()
+	end))
+	return nisnt
 end
 local lib = {Create = create,
 Random = function(min,max,seed)
