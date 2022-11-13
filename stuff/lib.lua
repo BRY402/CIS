@@ -15,9 +15,11 @@ local function create(Class,Parent,Properties)
 			end
 		end)
 		if ri ~= nil then
-			table.foreach(Properties,function(i,v)
-				ri[i] = v or ri[i]
-			end)
+			coroutine.resume(coroutine.create(function()		
+				for i,v in pairs(Properties) do
+					ri[i] = v or ri[i]
+				end
+			end))
 			ri:GetPropertyChangedSignal("Parent"):Connect(function()
 				if ri.Parent == nil then
 					table.insert(nilinstances,ri)
