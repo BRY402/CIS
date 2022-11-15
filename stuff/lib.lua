@@ -2,35 +2,31 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local function create(Class,Parent,Properties)
-	local r,ninst = coroutine.resume(coroutine.create(function()
-		local ri
-		xpcall(function()
-			ri = Instance.new(Class,Parent)
-			ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
-		end,function(f)
-			if f == string.format(mce,Class) then
-				task.wait()
-				create(Class,Parent)
-				coroutine.yield()
+	local ri
+	xpcall(function()
+		ri = Instance.new(Class,Parent)
+		ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
+	end,function(f)
+		if f == string.format(mce,Class) then
+			task.wait()
+			create(Class,Parent)
+		end
+	end)
+	if ri ~= nil then
+		coroutine.resume(coroutine.create(function()		
+			for i,v in pairs(Properties) do
+				ri[i] = v or ri[i]
+			end
+		end))
+		ri:GetPropertyChangedSignal("Parent"):Connect(function()
+			if ri.Parent == nil then
+				table.insert(nilinstances,ri)
+			else
+				table.remove(nilinstances,table.find(nilinstances,ri))
 			end
 		end)
-		if ri ~= nil then
-			coroutine.resume(coroutine.create(function()		
-				for i,v in pairs(Properties) do
-					ri[i] = v or ri[i]
-				end
-			end))
-			ri:GetPropertyChangedSignal("Parent"):Connect(function()
-				if ri.Parent == nil then
-					table.insert(nilinstances,ri)
-				else
-					table.remove(nilinstances,table.find(nilinstances,ri))
-				end
-			end)
-		end
-		return ri
-	end))
-	return nisnt
+	end
+	return ri
 end
 local lib = {Create = create,
 Random = function(min,max,seed)
