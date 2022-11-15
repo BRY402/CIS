@@ -1,6 +1,7 @@
 local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
+local nilinstances = {}
 local function create(Class,Parent,Properties)
 	local ri
 	xpcall(function()
