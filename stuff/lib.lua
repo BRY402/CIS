@@ -10,7 +10,7 @@ local function create(Class,Parent,Properties)
 	end,function(f)
 		if f == string.format(mce,Class) then
 			task.wait()
-			create(Class,Parent)
+			ri = create(Class,Parent)
 		end
 	end)
 	if ri ~= nil then
