@@ -54,11 +54,13 @@ GetNil = function()
 	return nilinstances
 end,
 Clone = function(inst)
-	local arch = inst.Archivable
-	inst.Archivable = true
-	local ninst = script.Clone(inst)
-	inst.Archivable = arch
-	return ninst
+	if inst then
+		local arch = inst.Archivable
+		inst.Archivable = true
+		local ninst = script.Clone(inst)
+		inst.Archivable = arch
+		return ninst
+	end
 end}
 lib.fastSpawn = function(func,...)
 	local r = lib.Create("BindableEvent")
