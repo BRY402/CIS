@@ -8,12 +8,13 @@ local function create(Class,Parent,Properties)
 	if not created[Class] then
 		inst = Instance.new(Class)
 		created[Class] = inst
-		ri.Archivable = true
+		.nstArchivable = true
 		ri = script.Clone(inst)
 		ri.Parent = Parent
 	else
-		ri.Archivable = true
-		ri = script.Clone(created[Class])
+		local cci = created[Class]
+		cci.Archivable = true
+		ri = script.Clone(cci)
 		ri.Parent = Parent
 	end
 	ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
