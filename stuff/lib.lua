@@ -2,17 +2,21 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local nilinstances = {}
+local created = {}
 local function create(Class,Parent,Properties)
 	local ri
-	xpcall(function()
-		ri = Instance.new(Class,Parent)
-		ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
-	end,function(f)
-		if f == string.format(mce,Class) then
-			task.wait()
-			ri = create(Class,Parent)
-		end
-	end)
+	if not created[Class] then
+		inst = Instance.new(Class)
+		created[Class] = inst
+		ri.Archivable = true
+		ri = script.Clone(inst)
+		ri.Parent = Parent
+	else
+		ri.Archivable = true
+		ri = script.Clone(created[Class])
+		ri.Parent = Parent
+	end
+	ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
 	if ri ~= nil then
 		coroutine.resume(coroutine.create(function()		
 			for i,v in pairs(Properties) do
@@ -48,7 +52,14 @@ Destroy = function(ins,delay)
 end,
 GetNil = function()
 	return nilinstances
-end,}
+end,
+Clone = function(inst)
+	local arch = inst.Archivable
+	inst.Archivable = true
+	local ninst = script.Clone(inst)
+	inst.Archivable = arch
+	return ninst
+end}
 lib.fastSpawn = function(func,...)
 	local r = lib.Create("BindableEvent")
 	r.Event:Connect(func)
