@@ -5,14 +5,14 @@ local nilinstances = {}
 local created = {}
 local function create(Class,Parent,Properties)
 	local ri
-	if not created[Class] then
+	local cci = created[Class]
+	if not cci then
 		inst = Instance.new(Class)
 		created[Class] = inst
-		.nstArchivable = true
+		inst.Archivable = true
 		ri = script.Clone(inst)
 		ri.Parent = Parent
 	else
-		local cci = created[Class]
 		cci.Archivable = true
 		ri = script.Clone(cci)
 		ri.Parent = Parent
