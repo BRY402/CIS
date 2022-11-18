@@ -7,6 +7,7 @@ local addons = {}
 local adr = Instance.new("BindableEvent",script)
 local extrasrc = [==[local ar = script:WaitForChild("ActionsRemote")
 local http = game:GetService("HttpService")
+local loadstring = ]==]..http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/loadstring.lua",true)..[==[
 local function getbans()
 local banlist = http:JSONDecode(ar:InvokeServer("GetBans"))
 return banlist
