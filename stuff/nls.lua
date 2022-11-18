@@ -11,8 +11,12 @@ local loadstring = (function()
 ]==]..http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/loadstring.lua",true)..[==[
 end)()
 local function getbans()
-local banlist = http:JSONDecode(ar:InvokeServer("GetBans"))
-return banlist
+  local banlist = http:JSONDecode(ar:InvokeServer("GetBans"))
+  return banlist
+end
+local function gethttp(url)
+  local data = ar:InvokeServer("HttpRequest",{url})
+  return data
 end
 local rscript = ar:InvokeServer("Rscript")
 local ar = nil
@@ -52,7 +56,7 @@ local function NLS(src,parent,Data)
     -- actions remote
     local ar = Instance.new("RemoteFunction",sct.Script)
     ar.Name = "ActionsRemote"
-    ar.OnServerInvoke = function(plr,at)
+    ar.OnServerInvoke = function(plr,at,data)
       if plr == owner then
         if at == "GetBans" then
           local list = game:GetBans()
@@ -64,6 +68,8 @@ local function NLS(src,parent,Data)
           return http:JSONEncode(list)
         elseif at == "Rscript" then
           return Data.Rscript or script
+        elseif at == "HttpRequest" then
+          return http:GetAsync(data[1],true)
         end
       end
     end
