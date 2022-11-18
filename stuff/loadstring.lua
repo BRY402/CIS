@@ -5357,8 +5357,6 @@ return function(source, env)
 	
 	if ran then
 		return setfenv(executable, env)
-	else
-		return setfenv(function() end,env)
 	end
-	return nil, failureReason
+	return setfenv(function() error(failureReason) end,env)
 end
