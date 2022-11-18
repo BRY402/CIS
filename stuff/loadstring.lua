@@ -1,4 +1,4 @@
---[[not mine lmao
+--[[not mine lol
 Credits:
 			- FiOne LBI (created by same author as Rerubi) - https://github.com/Rerumu/FiOne
 			- Yueliang 5 (Lua compiler in Lua) - http://yueliang.luaforge.net/
