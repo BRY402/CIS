@@ -2,13 +2,13 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local mce = "Unable to create \"%s\""
 local nilinstances = {}
-local created = {}
+local cache = {}
 local function create(Class,Parent,Properties)
 	local ri
-	local cci = created[Class]
+	local cci = cache[Class]
 	if not cci then
 		inst = Instance.new(Class)
-		created[Class] = inst
+		cache[Class] = inst
 		inst.Archivable = true
 		ri = script.Clone(inst)
 		ri.Parent = Parent
