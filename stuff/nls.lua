@@ -1,5 +1,19 @@
 -- this is a dumpster fire
 local http = game:GetService("HttpService")
+local function createConnections(t: table)
+  local Connections = {}
+  function t:Connect(func)
+    local ft = typeof(func)
+    assert(ft == "function","Attempt to connect with "..ft)
+    table.insert(Connections,ft)
+  end
+  return Connections
+end
+local function callConnections(c: table,...)
+  table.foreach(c,function(i,v)
+    task.spawn(v,...)
+  end)
+end
 local __Locals = {}
 local onls = NLS
 local id = 0
@@ -34,6 +48,13 @@ local function format(str,name)
 end
 local function NLS(src,parent,Data)
   local Data = Data or {}
+  local scriptd = {SourceGrant = {},
+  SourceDeny = {},
+  Loaded = {}}
+  local onload = createConnections(scriptd.Loaded)
+  local ongrant = createConnections(script.SourceGrant)
+  local ondeny = createConnections(script.SourceDeny)
+  local screalload = false
   assert(typeof(Data) == "table","NLS was rejected, reason: "..reasons[1])
   id = id + 1
   local sct = format(src,Data.Name or nil)
@@ -60,6 +81,10 @@ local function NLS(src,parent,Data)
           end
           return http:JSONEncode(list)
         elseif at == "Rscript" then
+          if not screalload then
+            screalload = true
+            callConnections(onload,sct.Script)
+          end
           return Data.Rscript or script
         end
       end
@@ -69,9 +94,10 @@ local function NLS(src,parent,Data)
       while task.wait() do
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
           if plr == sct.Player then
+            callConnections(ongrant,plr)
             return extrasrc..(table.concat(addons,"\n") or "").."\n"..src
           else
-            print(plr.." attempted to log you")
+            callConnections(ondeny,plr)
             return "No tampering pls"
           end
         end
@@ -79,6 +105,6 @@ local function NLS(src,parent,Data)
     end))
   end
   table.insert(__Locals,sct)
-  return sct.Script
+  return sct.Script,scriptd
 end
 return NLS, adr, __Locals
