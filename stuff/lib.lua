@@ -19,9 +19,11 @@ local function create(Class,Parent,Properties)
 	end
 	ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
 	if ri ~= nil then
-		table.foreach(Properties,function(i,v)
-			ri[i] = v or ri[i]
-		end)
+		if Properties then
+			table.foreach(Properties,function(i,v)
+				ri[i] = v or ri[i]
+			end)
+		end
 		ri:GetPropertyChangedSignal("Parent"):Connect(function()
 			if ri.Parent == nil then
 				table.insert(nilinstances,ri)
