@@ -19,7 +19,7 @@ local function create(Class,Parent,Properties)
 	end
 	ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
 	if ri ~= nil then
-		table.foreach(function(i,v)
+		table.foreach(Properties or {},function(i,v)
 			ri[i] = v or ri[i]
 		end)
 		ri:GetPropertyChangedSignal("Parent"):Connect(function()
