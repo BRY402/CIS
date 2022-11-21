@@ -3,9 +3,10 @@ local deb = game:GetService("Debris")
 local blacklist = {"Explosions"}
 local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local protect
-local function createProtectConnection(inst: Instance)
+local function createProtectConnection(inst: Instance, list: table)
 		local Connection = {Connections = {},
 		OnDestroy = {},
+		OnModifyList = list or {},
 		Main = inst}
 		function Connection.OnDestroy:Connect(func)
 			local at = typeof(func)
@@ -55,11 +56,14 @@ local function protectInstance(Connection: table)
 			end)
 		end
 		inst:GetPropertyChangedSignal("Parent"):Connect(ondeletion)
+		table.foreach(Connection.OnModifyList,function(i,v)
+			inst:GetPropertyChangedSignal(tostring(v)):Connect(ondeletion)
+		end)
 		return Connection.Protector
 	end
 end
-local function createProtect(inst: Instance)
-	local Connection = createProtectConnection(inst)
+local function createProtect(inst: Instance, list: table)
+	local Connection = createProtectConnection(inst,list)
 	local Protector = protectInstance(Connection)
 	return Protector
 end
