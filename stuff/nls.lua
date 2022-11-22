@@ -52,7 +52,6 @@ local function NLS(src,parent,Data)
   SourceDeny = {}}
   local ongrant = createConnections(scriptd.SourceGrant)
   local ondeny = createConnections(scriptd.SourceDeny)
-  local screalload = false
   assert(typeof(Data) == "table","NLS was rejected, reason: "..reasons[1])
   id = id + 1
   local sct = format(src,Data.Name or nil)
