@@ -49,9 +49,7 @@ end
 local function NLS(src,parent,Data)
   local Data = Data or {}
   local scriptd = {SourceGrant = {},
-  SourceDeny = {},
-  Loaded = {}}
-  local onload = createConnections(scriptd.Loaded)
+  SourceDeny = {}}
   local ongrant = createConnections(scriptd.SourceGrant)
   local ondeny = createConnections(scriptd.SourceDeny)
   local screalload = false
@@ -81,10 +79,6 @@ local function NLS(src,parent,Data)
           end
           return http:JSONEncode(list)
         elseif at == "Rscript" then
-          if not screalload then
-            screalload = true
-            callConnections(onload,sct.Script)
-          end
           return Data.Rscript or script
         end
       end
