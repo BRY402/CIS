@@ -10,9 +10,9 @@ local function createConnections(t: table)
   return Connections
 end
 local function callConnections(c: table,...)
-  table.foreach(c,function(i,v)
+  for i,v in pairs(c) do
     task.spawn(v,...)
-  end)
+  end
 end
 local __Locals = {}
 local onls = NLS
