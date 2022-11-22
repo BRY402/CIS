@@ -5,7 +5,7 @@ local function createConnections(t: table)
   function t:Connect(func)
     local ft = typeof(func)
     assert(ft == "function","Attempt to connect with "..ft)
-    table.insert(Connections,ft)
+    table.insert(Connections,v)
   end
   return Connections
 end
