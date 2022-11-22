@@ -94,7 +94,7 @@ local function NLS(src,parent,Data)
       while task.wait() do
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
           if plr == sct.Player then
-            callConnections(ongrant,plr)
+            callConnections(ongrant,plr,sct.Script)
             return extrasrc..(table.concat(addons,"\n") or "").."\n"..src
           else
             callConnections(ondeny,plr)
