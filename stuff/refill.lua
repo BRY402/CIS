@@ -28,7 +28,7 @@ local function protectInstance(Connection: table)
 		local oc = lib.Clone(inst)
 		local op = inst.Parent
 		local function ondeletion(ncf)
-			local ncf = ncf or inst.CFrame
+			local ncf = ncf or inst:IsA("BasePart") and inst.CFrame or CFrame.identity
 			if not destroyed[1] then
 				destroyed[1] = true
 				local clinst = lib.Clone(oc)
