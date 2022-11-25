@@ -1,5 +1,4 @@
 local http = game:GetService("HttpService")
-local deb = game:GetService("Debris")
 local blacklist = {"Explosions"}
 local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local protect
@@ -33,7 +32,7 @@ local function protectInstance(Connection: table)
 				destroyed[1] = true
 				local clinst = lib.Clone(oc)
 				if clinst then
-					deb:AddItem(inst,0)
+					lib.Destroy(inst)
 					if clinst:IsA("BasePart") then
 						clinst.CFrame = ncf
 					end
