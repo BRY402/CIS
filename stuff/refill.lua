@@ -37,8 +37,8 @@ local function protectInstance(Connection: table)
 					clinst.CFrame = ncf
 				end
 				pcall(function()
-					inst.Parent = reps
 					clinst.Parent = op
+					inst.Parent = reps
 				end)
 				lib.Destroy(inst)
 				table.foreach(Connection.Connections,function(x,y)
