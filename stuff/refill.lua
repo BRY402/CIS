@@ -30,21 +30,24 @@ local function protectInstance(Connection: table)
 		local oc = lib.Clone(inst)
 		local op = inst.Parent
 		local function ondeletion(ncf)
-			local ncf = ncf or inst:IsA("BasePart") and inst.CFrame or CFrame.identity
-			local clinst = lib.Clone(oc)
-			if clinst then
-				if clinst:IsA("BasePart") then
-					clinst.CFrame = ncf
+			if not destroyed[1] then
+				destroyed[1] = true
+				local ncf = ncf or inst:IsA("BasePart") and inst.CFrame or CFrame.identity
+				local clinst = lib.Clone(oc)
+				if clinst then
+					if clinst:IsA("BasePart") then
+						clinst.CFrame = ncf
+					end
+					pcall(function()
+						clinst.Parent = op
+						inst.Parent = reps
+					end)
+					lib.Destroy(inst)
+					table.foreach(Connection.Connections,function(x,y)
+						task.spawn(y,clinst,inst)
+					end)
+					protect({clinst,inst},Connection)
 				end
-				pcall(function()
-					clinst.Parent = op
-					inst.Parent = reps
-				end)
-				lib.Destroy(inst)
-				table.foreach(Connection.Connections,function(x,y)
-					task.spawn(y,clinst,inst)
-				end)
-				protect({clinst,inst},Connection)
 			end
 		end
 		inst.Destroying:Once(ondeletion)
