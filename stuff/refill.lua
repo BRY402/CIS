@@ -1,4 +1,5 @@
 local http = game:GetService("HttpService")
+local reps = game:GetService("ReplicatedStorage")
 local blacklist = {"Explosions"}
 local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local protect
@@ -6,14 +7,16 @@ local function createProtectConnection(inst: Instance, list: table)
 		local Connection = {Connections = {},
 		OnDestroy = {},
 		OnModifyList = list or {},
-		Main = inst}
+		Main = inst,
+		Last = nil}
 		function Connection.OnDestroy:Connect(func)
 			local at = typeof(func)
 			assert(at == "function","Attempt to connect with type "..at)
 			table.insert(Connection.Connections,func)
 		end
 		Connection.Protector = {OnDestroy = Connection.OnDestroy,
-		Main = inst}
+		Main = inst,
+		Last = nil}
 	return Connection
 end
 local function protectInstance(Connection: table)
@@ -28,25 +31,23 @@ local function protectInstance(Connection: table)
 		local op = inst.Parent
 		local function ondeletion(ncf)
 			local ncf = ncf or inst:IsA("BasePart") and inst.CFrame or CFrame.identity
-			if not destroyed[1] then
-				destroyed[1] = true
-				local clinst = lib.Clone(oc)
-				if clinst then
-					lib.Destroy(inst)
-					if clinst:IsA("BasePart") then
-						clinst.CFrame = ncf
-					end
-					pcall(function()
-						clinst.Parent = op
-					end)
-					table.foreach(Connection.Connections,function(x,y)
-						task.spawn(y,clinst)
-					end)
-					protect(clinst,Connection)
+			local clinst = lib.Clone(oc)
+			if clinst then
+				if clinst:IsA("BasePart") then
+					clinst.CFrame = ncf
 				end
+				pcall(function()
+					inst.Parent = reps
+					clinst.Parent = op
+				end)
+				lib.Destroy(inst)
+				table.foreach(Connection.Connections,function(x,y)
+					task.spawn(y,clinst,inst)
+				end)
+				protect({clinst,inst},Connection)
 			end
 		end
-		inst.Destroying:Connect(ondeletion)
+		inst.Destroying:Once(ondeletion)
 		if inst:IsA("BasePart") then
 			inst:GetPropertyChangedSignal("CFrame"):Connect(function()
 				if inst.Position.Y <= -50 then
@@ -54,9 +55,9 @@ local function protectInstance(Connection: table)
 				end
 			end)
 		end
-		inst:GetPropertyChangedSignal("Parent"):Connect(ondeletion)
+		inst:GetPropertyChangedSignal("Parent"):Once(ondeletion)
 		table.foreach(Connection.OnModifyList,function(i,v)
-			inst:GetPropertyChangedSignal(tostring(v)):Connect(ondeletion)
+			inst:GetPropertyChangedSignal(tostring(v)):Once(ondeletion)
 		end)
 		return Connection.Protector
 	end
@@ -66,9 +67,11 @@ local function createProtect(inst: Instance, list: table)
 	local Protector = protectInstance(Connection)
 	return Protector
 end
-function protect(ninst: Instance, Connection: table)
-	Connection.Main = ninst
-	Connection.Protector.Main = ninst
+function protect(ins: table, Connection: table)
+	Connection.Main = ins[1]
+	Connection.Last = ins[2]
+	Connection.Protector.Main = ins[1]
+	Connection.Protector.Last = ins[2]
 	protectInstance(Connection)
 end
 return createProtect
