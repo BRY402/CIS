@@ -1,6 +1,6 @@
 local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
-local mce = "Unable to create \"%s\""
+local clonable = UserSettings()
 local nilinstances = {}
 local cache = {}
 local function create(Class,Parent,Properties)
@@ -10,11 +10,11 @@ local function create(Class,Parent,Properties)
 		inst = Instance.new(Class)
 		cache[Class] = inst
 		inst.Archivable = true
-		ri = script.Clone(inst)
+		ri = clonable.Clone(inst)
 		ri.Parent = Parent
 	else
 		cci.Archivable = true
-		ri = script.Clone(cci)
+		ri = clonable.Clone(cci)
 		ri.Parent = Parent
 	end
 	ri:SetAttribute("Creator",typeof(script) == "Instance" and script:GetFullName() or "nil")
@@ -56,7 +56,7 @@ Clone = function(inst)
 	if inst then
 		local arch = inst.Archivable
 		inst.Archivable = true
-		local ninst = script.Clone(inst)
+		local ninst = clonable.Clone(inst)
 		inst.Archivable = arch
 		return ninst
 	end
