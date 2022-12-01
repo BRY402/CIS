@@ -1,6 +1,6 @@
 local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
-local clonable = game
+local clonable = script
 local nilinstances = {}
 local cache = {}
 local function create(Class,Parent,Properties)
