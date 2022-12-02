@@ -8,7 +8,7 @@ local function create(Class,Parent,Properties)
 	local ri
 	local cci = cache[Class]
 	if not cci then
-		inst = Instance.new(Class)
+		local inst = Instance.new(Class)
 		cache[Class] = inst
 		inst.Archivable = true
 		ri = clonable.Clone(inst)
