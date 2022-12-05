@@ -25,7 +25,7 @@ local lib = loadstring(http:GetAsync("https://github.com/BRY402/luau-scripts/raw
 local refill = loadstring(http:GetAsync("https://github.com/BRY402/luau-scripts/raw/main/stuff/refill.lua",true))()
 local PNLS = loadstring(http:GetAsync("https://github.com/BRY402/luau-scripts/raw/main/stuff/nls.lua",true))()
 local function removeinvalid(d)
-	if d:IsA("Mesh") or d:IsA("SpecialMesh") or d:IsA("BrickMesh") then
+	if not d:IsA("Sound") then
 		lib.Destroy(d)
 	end
 end
@@ -43,6 +43,7 @@ local refonchange = {"Size",
 "CenterOfMass",
 "CollisionGroup",
 "CollisionGroupId",
+"CFrame",
 "Material",
 "MaterialVariant",
 "Reflectance",
@@ -65,52 +66,6 @@ Snow = "rbxassetid://6154305275",
 Rock = "rbxassetid://544622629"}
 local rem = lib.Create("RemoteEvent",script,{Name = "FC1R"})
 local prr = refill(rem)
-local function chatmsg(target,txt)
-	local c = {Msg = txt or "PlaceHolder"}
-	local s = lib.Create("Sound",target.Main,{Name = "MsgSfx",
-	PlaybackSpeed = .35,
-	Volume = 1.75,
-	SoundId = "rbxassetid://428071857"})
-	if not target.Main:FindFirstChild("BillGui") then
-		local x = 3.5
-		local bill = lib.Create("BillboardGui",nil,{Name = "BillGui",
-		Size = UDim2.new(1,0,1,0),
-		StudsOffset = Vector3.new(0,2.5,0)})
-		local msg = lib.Create("TextBox",bill,{Name = "Msg",
-		TextColor3 = Color3.new(1,1,1),
-		Text = "",
-		BackgroundTransparency = 1,
-		TextScaled = true,
-		Size = UDim2.new(x,0,1.5,0),
-		Position = UDim2.new(-(x / 2.5),0,0,0)})
-		bill.Parent = target.Main
-		c.Bill = bill
-	else
-		c.Bill = target.Main.BillGui
-	end
-	if c.Bill then
-		local tb = c.Bill.Msg
-		if tb.Text ~= "" then
-			tb.Text = tb.Text.."\n"
-		end
-		for i = 1,#c.Msg do
-			local msg = c.Bill:FindFirstChild("Msg")
-			if msg then
-				continue
-			else
-				break
-			end
-			if c.Bill.Parent ~= target.Main then
-				lib.Destroy(c.Bill)
-			end
-			tb.Text = msg.Text..string.sub(c.Msg,i,i)
-			s:Play()
-			task.wait()
-		end
-		lib.Destroy(c.Bill,5)
-		lib.Destroy(s,5)
-	end
-end
 local function newpart(typ)
 	local pd = {}
 	if typ == "Limb" then
@@ -181,13 +136,7 @@ local function newpart(typ)
 		CanCollide = false})
 		local connection = refill(p,refonchange)
 		p.DescendantAdded:Connect(removeinvalid)
-		m.Changed:Connect(function()
-			lib.Destroy(p)
-		end)
 		connection.OnDestroy:Connect(function(np)
-			m.Changed:Connect(function()
-				lib.Destroy(p)
-			end)
 			np.DescendantAdded:Connect(removeinvalid)
 		end)
 		table.insert(pd,connection)
@@ -369,12 +318,6 @@ owner.Chatted:Connect(function(msg)
 end)
 owner.CharacterAdded:Connect(function()
 	owner.Character = nil
-end)
-owner.Chatted:Connect(function(msg)
-	local smsg = string.split(msg," ")
-	if smsg[1] ~= "/e" then
-		chatmsg(h,msg)
-	end
 end)
 rs.Stepped:Connect(function(_,d)
 	local filtertab = {h.Main,
