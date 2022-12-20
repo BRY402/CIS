@@ -36,6 +36,10 @@ local function protectInstance(Connection: table)
 				local clinst = lib.Clone(oc)
 				if clinst then
 					if clinst:IsA("BasePart") then
+						table.foreach(inst:GetJoints(),function(i,v)
+							v.Part0 = v.Part0 == inst and clinst or v.Part0
+							v.Part1 = v.Part1 == inst and clinst or v.Part1
+						end)
 						clinst.CFrame = ncf
 					end
 					pcall(function()
