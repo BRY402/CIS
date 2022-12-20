@@ -4,6 +4,15 @@ local clonable = Instance.new("Script")
 local nilinstances = {}
 local cache = {}
 clonable.Disabled = true
+local function isnilparent(target)
+	target:GetPropertyChangedSignal("Parent"):Connect(function()
+		if target.Parent == nil then
+			table.insert(nilinstances,target)
+		else
+			table.remove(nilinstances,table.find(nilinstances,target))
+		end
+	end)
+end
 local function create(Class,Parent,Properties)
 	local ri
 	local cci = cache[Class]
@@ -20,15 +29,14 @@ local function create(Class,Parent,Properties)
 	end
 	if ri ~= nil then
 		table.foreach(Properties or {},function(i,v)
-			ri[i] = v
-		end)
-		ri:GetPropertyChangedSignal("Parent"):Connect(function()
-			if ri.Parent == nil then
-				table.insert(nilinstances,ri)
+			if tonumber(i) then
+				v.Parent = ri
+				isnilparent(v)
 			else
-				table.remove(nilinstances,table.find(nilinstances,ri))
+				ri[i] = v
 			end
 		end)
+		isnilparent(ri)
 	end
 	return ri
 end
