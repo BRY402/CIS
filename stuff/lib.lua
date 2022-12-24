@@ -69,10 +69,9 @@ Clone = function(inst)
 		return ninst
 	end
 end}
+local remote = lib.Create("BindableEvent")
 lib.fastSpawn = function(func,...)
-	local r = lib.Create("BindableEvent")
-	r.Event:Connect(func)
-	r:Fire(...)
-	lib.Destroy(r)
+	remote.Event:Connect(func)
+	remote:Fire(...)
 end
 return lib
