@@ -71,7 +71,7 @@ Clone = function(inst)
 end}
 local remote = lib.Create("BindableEvent")
 lib.fastSpawn = function(func,...)
-	remote.Event:Connect(func)
+	remote.Event:Once(func)
 	remote:Fire(...)
 end
 return lib
