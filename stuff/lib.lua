@@ -13,6 +13,14 @@ local function isnilparent(target)
 		end
 	end)
 end
+local function setproperty(target,index,value)
+	if tonumber(index) then
+		value.Parent = target
+		isnilparent(value)
+	else
+		target[index] = value
+	end
+end
 local function create(Class,Parent,Properties)
 	local ri
 	local cci = cache[Class]
@@ -28,14 +36,23 @@ local function create(Class,Parent,Properties)
 		ri.Parent = Parent
 	end
 	if ri ~= nil then
-		table.foreach(Properties or {},function(i,v)
-			if tonumber(i) then
-				v.Parent = ri
-				isnilparent(v)
-			else
-				ri[i] = v
+		local selfFunc = Properties.Self
+		if selfFunc then
+			assert(typeof(selfFunc) == "function","Self index is expected to be a function")
+			task.spawn(selfFunc,ri)
+		end
+		if Properties.CanPropertyYield then
+			for i,v in pairs(Properties) do
+				setproperty(ri,i,v)
+				if i % 250 == 0 then
+					task.wait()
+				end
 			end
-		end)
+		else
+			table.foreach(Properties or {},function(i,v)
+				setproperty(ri,i,v)
+			end)
+		end
 		isnilparent(ri)
 	end
 	return ri
