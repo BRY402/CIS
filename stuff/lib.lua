@@ -45,9 +45,11 @@ local function create(Class,Parent,Properties)
 		end
 		if Properties.CanPropertyYield then
 			Properties.CanPropertyYield = nil
+			local n = 0
 			for i,v in pairs(Properties) do
 				setproperty(ri,i,v)
-				if i % 250 == 0 then
+				n = n + 1
+				if n % 250 == 0 then
 					task.wait()
 				end
 			end
