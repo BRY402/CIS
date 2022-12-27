@@ -22,6 +22,7 @@ local function setproperty(target,index,value)
 	end
 end
 local function create(Class,Parent,Properties)
+	local Properties = Properties or {}
 	local ri
 	local cci = cache[Class]
 	if not cci then
@@ -51,7 +52,7 @@ local function create(Class,Parent,Properties)
 				end
 			end
 		else
-			table.foreach(Properties or {},function(i,v)
+			table.foreach(Properties,function(i,v)
 				setproperty(ri,i,v)
 			end)
 		end
