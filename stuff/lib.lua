@@ -38,7 +38,7 @@ local function create(Class,Parent,Properties)
 		local selfFunc = Properties.__self
 		if selfFunc then
 			Properties.__self = nil
-			assert(typeof(selfFunc) == "function","Self index is expected to be a function")
+			assert(typeof(selfFunc) == "function","__self index is expected to be a function")
 			task.spawn(function()
 				local env = setmetatable({self = Properties,
 					Parent = Parent},{__index = function(self,i)
@@ -52,13 +52,9 @@ local function create(Class,Parent,Properties)
 		end
 		if Properties.CanPropertyYield then
 			Properties.CanPropertyYield = nil
-			local n = 0
 			for i,v in pairs(Properties) do
 				setproperty(ri,i,v)
-				n = n + 1
-				if n % 250 == 0 then
-					task.wait()
-				end
+				task.wait()
 			end
 		else
 			table.foreach(Properties,function(i,v)
