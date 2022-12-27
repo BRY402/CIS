@@ -36,12 +36,14 @@ local function create(Class,Parent,Properties)
 		ri.Parent = Parent
 	end
 	if ri ~= nil then
-		local selfFunc = Properties.Self
+		local selfFunc = Properties.__self
 		if selfFunc then
+			Properties.__self = nil
 			assert(typeof(selfFunc) == "function","Self index is expected to be a function")
 			task.spawn(selfFunc,ri)
 		end
 		if Properties.CanPropertyYield then
+			Properties.CanPropertyYield = nil
 			for i,v in pairs(Properties) do
 				setproperty(ri,i,v)
 				if i % 250 == 0 then
