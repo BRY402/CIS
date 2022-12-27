@@ -30,18 +30,25 @@ local function create(Class,Parent,Properties)
 		cache[Class] = inst
 		inst.Archivable = true
 		ri = clonable.Clone(inst)
-		ri.Parent = Parent
 	else
 		cci.Archivable = true
 		ri = clonable.Clone(cci)
-		ri.Parent = Parent
 	end
 	if ri ~= nil then
 		local selfFunc = Properties.__self
 		if selfFunc then
 			Properties.__self = nil
 			assert(typeof(selfFunc) == "function","Self index is expected to be a function")
-			task.spawn(selfFunc,ri)
+			task.spawn(function()
+				local env = setmetatable({self = Properties,
+					Parent = Parent},{__index = function(self,i)
+					return rawget(self,i) or getfenv()[i]
+				end,
+				__newindex = function(self,i,v)
+					rawset(self,i,v)
+				end})
+				setfenv(selfFunc,env)(ri)
+			end)
 		end
 		if Properties.CanPropertyYield then
 			Properties.CanPropertyYield = nil
@@ -60,6 +67,7 @@ local function create(Class,Parent,Properties)
 		end
 		isnilparent(ri)
 	end
+	ri.Parent = Parent
 	return ri
 end
 local lib = {Create = create,
