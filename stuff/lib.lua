@@ -21,6 +21,36 @@ local function setproperty(target,index,value)
 		target[index] = value
 	end
 end
+local function setproperties(Properties)
+	if Properties then
+		local selfFunc = Properties.__self
+		if selfFunc then
+			Properties.__self = nil
+			assert(typeof(selfFunc) == "function","__self index is expected to be a function")
+			task.spawn(function()
+				local env = setmetatable({self = Properties,
+					Parent = Parent},{__index = function(self,i)
+						return rawget(self,i) or getfenv()[i]
+					end,
+					__newindex = function(self,i,v)
+						rawset(self,i,v)
+					end})
+				setfenv(selfFunc,env)(ri)
+			end)
+		end
+		if Properties.CanPropertyYield then
+			Properties.CanPropertyYield = nil
+			for i,v in pairs(Properties) do
+				setproperty(ri,i,v)
+				task.wait()
+			end
+		else
+			table.foreach(Properties,function(i,v)
+				setproperty(ri,i,v)
+			end)
+		end
+	end
+end
 local function create(Class,Parent,Properties)
 	local ri
 	local cci = cache[Class]
@@ -34,37 +64,19 @@ local function create(Class,Parent,Properties)
 		ri = clonable.Clone(cci)
 	end
 	if ri ~= nil then
-		if Properties then
-			local selfFunc = Properties.__self
-			if selfFunc then
-				Properties.__self = nil
-				assert(typeof(selfFunc) == "function","__self index is expected to be a function")
-				task.spawn(function()
-					local env = setmetatable({self = Properties,
-						Parent = Parent},{__index = function(self,i)
-						return rawget(self,i) or getfenv()[i]
-					end,
-					__newindex = function(self,i,v)
-						rawset(self,i,v)
-					end})
-					setfenv(selfFunc,env)(ri)
-				end)
-			end
-			if Properties.CanPropertyYield then
-				Properties.CanPropertyYield = nil
-				for i,v in pairs(Properties) do
-					setproperty(ri,i,v)
-					task.wait()
-				end
-			else
-				table.foreach(Properties,function(i,v)
-					setproperty(ri,i,v)
-				end)
+		if Properties and Properties ~= true then
+			setproperties(Properties)
+		elseif Properties == true then
+			return function(Properties)
+				setproperties(Properties)
+				ri.Parent = Parent
+				isnilparent(ri)
+				return ri
 			end
 		end
+		ri.Parent = Parent
 		isnilparent(ri)
 	end
-	ri.Parent = Parent
 	return ri
 end
 local lib = {Create = create,
