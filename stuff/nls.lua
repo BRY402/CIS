@@ -85,14 +85,19 @@ local function NLS(src,parent,Data)
     -- execution for nls
     coroutine.resume(coroutine.create(function()
       while task.wait() do
+        local sent
         sct.Script:FindFirstChild("Source").OnServerInvoke = function(plr)
           if plr == sct.Player then
             callConnections(ongrant,plr,sct.Script)
+            sent = true
             return extrasrc..(table.concat(addons,"\n") or "").."\n"..src
           else
             callConnections(ondeny,plr)
-            return "No tampering pls"
+            return ""
           end
+        end
+        if sent then
+          break
         end
       end
     end))
