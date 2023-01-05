@@ -21,7 +21,7 @@ local function setproperty(target,index,value)
 		target[index] = value
 	end
 end
-local function setproperties(Properties)
+local function setproperties(Properties,inst)
 	if Properties then
 		local selfFunc = Properties.__self
 		if selfFunc then
@@ -35,18 +35,18 @@ local function setproperties(Properties)
 					__newindex = function(self,i,v)
 						rawset(self,i,v)
 					end})
-				setfenv(selfFunc,env)(ri)
+				setfenv(selfFunc,env)(inst)
 			end)
 		end
 		if Properties.CanPropertyYield then
 			Properties.CanPropertyYield = nil
 			for i,v in pairs(Properties) do
-				setproperty(ri,i,v)
+				setproperty(inst,i,v)
 				task.wait()
 			end
 		else
 			table.foreach(Properties,function(i,v)
-				setproperty(ri,i,v)
+				setproperty(inst,i,v)
 			end)
 		end
 	end
@@ -65,10 +65,10 @@ local function create(Class,Parent,Properties)
 	end
 	if ri ~= nil then
 		if Properties and Properties ~= true then
-			setproperties(Properties)
+			setproperties(Properties,ri)
 		elseif Properties == true then
 			return function(Properties)
-				setproperties(Properties)
+				setproperties(Properties,ri)
 				ri.Parent = Parent
 				isnilparent(ri)
 				return ri
