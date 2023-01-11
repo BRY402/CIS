@@ -13,7 +13,7 @@ local function isnilparent(target)
 		end
 	end)
 end
-local function setproperty(target,index,value)
+local function setproperty(target, index, value)
 	if tonumber(index) then
 		value.Parent = target
 		isnilparent(value)
@@ -21,7 +21,7 @@ local function setproperty(target,index,value)
 		target[index] = value
 	end
 end
-local function setproperties(Properties,inst)
+local function setproperties(Properties, inst)
 	if Properties then
 		local selfFunc = Properties.__self
 		if selfFunc then
@@ -51,65 +51,115 @@ local function setproperties(Properties,inst)
 		end
 	end
 end
-local function create(Class,Parent,Properties)
-	local ri
-	local cci = cache[Class]
-	if not cci then
-		local inst = Instance.new(Class)
-		cache[Class] = inst
-		inst.Archivable = true
-		ri = clonable.Clone(inst)
-	else
-		cci.Archivable = true
-		ri = clonable.Clone(cci)
-	end
-	if ri ~= nil then
-		if Properties and Properties ~= true then
-			setproperties(Properties,ri)
-		elseif Properties == true then
-			return function(Properties)
-				setproperties(Properties,ri)
-				ri.Parent = Parent
-				isnilparent(ri)
-				return ri
-			end
-		end
-		ri.Parent = Parent
-		isnilparent(ri)
-	end
-	return ri
+local function makeMethod(method, methodName)
+    local env = getfenv(method)
+    setfenv(method,setmetatable({thisFunction = method},{__index = function(self,i)
+            return env[i]
+        end,
+        __newindex = function(self,i,v)
+            rawset(self,i,v)
+        end}))
+    local function call(self,...)
+        local indexmethod = self[methodName]
+        if indexmethod == method then
+            method(self,...)
+        else
+            indexmethod(self,...)
+        end
+    end
+    return call
 end
-local lib = {Create = create,
-Random = function(min,max,seed)
-	local nrs = Random.new(seed or os.clock())
-	if min and max then
-		int = nrs:NextInteger(min,max)
-		num = nrs:NextNumber(min,max)
-	else
-		int = 0
-		num = nrs:NextNumber()
-	end
-	local unit = nrs:NextUnitVector()
-	local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
-	return rt
+local lib = {newEvent = function(eventName, callerName, methodOrFunction)
+    local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
+    local Connections = {}
+    local returned = {[eventName] = {}}
+    returned[callerName] = makeMethod(function(self,...)
+        if methodOrFunction == "Method" then
+            local args = table.pack(...)
+            args.n = nil
+            table.foreach(Connections,function(i,func)
+                func(unpack(args))
+            end)
+        else
+            local args = table.pack(self,...)
+            args.n = nil
+            table.foreach(Connections,function(i,func)
+                func(unpack(args))
+            end)
+        end
+    end,callerName)
+    local event = returned[eventName]
+    function event:Connect(func)
+        table.insert(Connections,func)
+        local Connection = {}
+        function Connection:Disconnect()
+            assert(table.find(Connections,func),"Connection was already disconnected")
+            table.remove(Connections,func)
+        end
+        Connection.disconnect = Connection.Disconnect
+        return Connection
+    end
+    event.connect = event.Connect
+    return returned
 end,
-Destroy = function(ins,delay)
-	deb:AddItem(ins,tonumber(delay) or 0)
-end,
-GetNil = function()
-	return nilinstances
-end,
-Clone = function(inst)
-	if inst then
-		local arch = inst.Archivable
-		inst.Archivable = true
-		local ninst = clonable.Clone(inst)
-		inst.Archivable = arch
-		return ninst
-	end
-end}
+	Create = function(Class, Parent, Properties)
+		local ri
+		local cci = cache[Class]
+		if not cci then
+			local inst = Instance.new(Class)
+			cache[Class] = inst
+			inst.Archivable = true
+			ri = clonable.Clone(inst)
+		else
+			cci.Archivable = true
+			ri = clonable.Clone(cci)
+		end
+		if ri ~= nil then
+			if Properties and Properties ~= true then
+				setproperties(Properties,ri)
+			elseif Properties == true then
+				return function(Properties)
+					setproperties(Properties,ri)
+					ri.Parent = Parent
+					isnilparent(ri)
+					return ri
+				end
+			end
+			ri.Parent = Parent
+			isnilparent(ri)
+		end
+		return ri
+	end,
+	Random = function(min, max, seed)
+		local nrs = Random.new(seed or os.clock())
+		if min and max then
+			int = nrs:NextInteger(min,max)
+			num = nrs:NextNumber(min,max)
+		else
+			int = 0
+			num = nrs:NextNumber()
+		end
+		local unit = nrs:NextUnitVector()
+		local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
+		return rt
+	end,
+	Destroy = function(ins,delay)
+		deb:AddItem(ins,tonumber(delay) or 0)
+	end,
+	GetNil = function()
+		return nilinstances
+	end,
+	Clone = function(inst)
+		if inst then
+			local arch = inst.Archivable
+			inst.Archivable = true
+			local ninst = clonable.Clone(inst)
+			inst.Archivable = arch
+			return ninst
+		end
+	end}
 local remote = lib.Create("BindableEvent")
-lib.fastSpawn = function(func,...)
+lib.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
 	remote:Fire(...)
 end
