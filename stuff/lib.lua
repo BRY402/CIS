@@ -98,7 +98,7 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
     function event:Connect(func)
 		local calledConnection = {Type = "Connect"}
 		function calledConnection:Call(...)
-			func(...)
+			task.spawn(func,...)
 		end
         table.insert(Connections,calledConnection)
         local Connection = {}
@@ -109,21 +109,28 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
         Connection.disconnect = Connection.Disconnect
         return Connection
     end
+	function event:ConnectParallel(...)
+		assert(script:GetActor(),"Script must have an actor")
+		task.desynchronize()
+		task.spawn(func,...)
+	end
 	function event:Once(func)
 		local calledConnection = {Type = "Once"}
 		function calledConnection:Call(...)
-			func(...)
+			task.spawn(func,...)
 		end
         table.insert(Connections,calledConnection)
-        local Connection = {}
+        local Connection = {Connected = true}
         function Connection:Disconnect()
             assert(table.find(Connections,func),"Connection was already disconnected")
+			Connection.Connected = false
             table.remove(Connections,func)
         end
         Connection.disconnect = Connection.Disconnect
         return Connection
 	end
     event.connect = event.Connect
+	event.connectparallel = event.ConnectParallel
 	event.once = event.Once
     return returned
 end,
