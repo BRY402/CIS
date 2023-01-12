@@ -78,19 +78,29 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
             local args = table.pack(...)
             args.n = nil
             table.foreach(Connections,function(i,func)
-                func(unpack(args))
+                Connection:Call(unpack(args))
+		if Connection.Type == "Once" then
+			table.remove(Connections,Connection)
+		end
             end)
         else
             local args = table.pack(self,...)
             args.n = nil
-            table.foreach(Connections,function(i,func)
-                func(unpack(args))
+            table.foreach(Connections,function(i,Connection)
+                Connection:Call(unpack(args))
+		if Connection.Type == "Once" then
+			table.remove(Connections,Connection)
+		end
             end)
         end
     end,callerName)
     local event = returned[eventName]
     function event:Connect(func)
-        table.insert(Connections,func)
+		local calledConnection = {Type = "Connect"}
+		function calledConnection:Call(...)
+			func(...)
+		end
+        table.insert(Connections,calledConnection)
         local Connection = {}
         function Connection:Disconnect()
             assert(table.find(Connections,func),"Connection was already disconnected")
@@ -99,7 +109,22 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
         Connection.disconnect = Connection.Disconnect
         return Connection
     end
+	function event:Once(func)
+		local calledConnection = {Type = "Once"}
+		function calledConnection:Call(...)
+			func(...)
+		end
+        table.insert(Connections,calledConnection)
+        local Connection = {}
+        function Connection:Disconnect()
+            assert(table.find(Connections,func),"Connection was already disconnected")
+            table.remove(Connections,func)
+        end
+        Connection.disconnect = Connection.Disconnect
+        return Connection
+	end
     event.connect = event.Connect
+	event.once = event.Once
     return returned
 end,
 	Create = function(Class, Parent, Properties)
