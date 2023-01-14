@@ -59,15 +59,7 @@ local function makeMethod(method, methodName)
         __newindex = function(self,i,v)
             rawset(self,i,v)
         end}))
-    local function call(self,...)
-        local indexmethod = self[methodName]
-        if indexmethod == method then
-            method(self,...)
-        else
-            indexmethod(self,...)
-        end
-    end
-    return call
+    return method
 end
 local lib = {newEvent = function(eventName, callerName, methodOrFunction)
     local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
