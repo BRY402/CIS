@@ -69,7 +69,7 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
         if methodOrFunction == "Method" then
             local args = table.pack(...)
             args.n = nil
-            table.foreach(Connections,function(i,func)
+            table.foreach(Connections,function(i,Connection)
                 Connection:Call(unpack(args))
 		if Connection.Type == "Once" then
 			table.remove(Connections,Connection)
