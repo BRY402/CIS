@@ -4,6 +4,16 @@ local clonable = Instance.new("Script")
 local nilinstances = {}
 local cache = {}
 clonable.Disabled = true
+local function extraEnv(func)
+    local env = getfenv(func)
+    setfenv(func,setmetatable({thisFunction = func},{__index = function(self,i)
+            return env[i]
+        end,
+        __newindex = function(self,i,v)
+            rawset(self,i,v)
+        end}))
+    return func
+end
 local function range(min,max,func)
 	for i = min,max do
 		local yield = i % 10 == 0
@@ -78,16 +88,6 @@ local function setproperties(Properties, inst)
 			end)
 		end
 	end
-end
-local function extraEnv(func)
-    local env = getfenv(func)
-    setfenv(func,setmetatable({thisFunction = func},{__index = function(self,i)
-            return env[i]
-        end,
-        __newindex = function(self,i,v)
-            rawset(self,i,v)
-        end}))
-    return func
 end
 local lib = {newEvent = function(eventName, callerName, methodOrFunction)
     local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
