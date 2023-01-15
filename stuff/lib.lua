@@ -35,9 +35,10 @@ end
 local function forever(func)
 	local number = {0}
 	while true do
-		number[1] = number[1] + 1
-		local yield = number[1] % 10 == 0
-		extraEnv(func)(yield)
+		local n = number[1]
+		number[1] = n + 1
+		local yield = n % 10 == 0
+		extraEnv(func)(n,yield)
 		if yield then
 			task.wait()
 		end
