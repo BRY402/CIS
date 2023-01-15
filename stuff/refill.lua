@@ -5,16 +5,15 @@ local protect
 local function ondeletion(data)
 	local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
 	local cloneinst = lib.Clone(data.Clone)
+	lib.Destroy(data.Current)
 	if cloneinst then
 		if cloneinst:IsA("BasePart") then
 			cloneinst.CFrame = newcf
 		end
 		pcall(function()
 			cloneinst.Parent = data.Parent
-			data.Current.Parent = nil
 		end)
 		local newEvent = protect(cloneinst)
-		lib.Destroy(data.Current)
 		data.Event:CallOnDestroy(cloneinst,data.Current)
 		newEvent.CallOnDestroy = data.Event.CallOnDestroy
 	end
