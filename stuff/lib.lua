@@ -13,8 +13,8 @@ local function range(min,max,func)
 		end
 	end
 end
-local function read(data,func)
-	for i,v in pairs(data) do
+local function read(list,func)
+	for i,v in pairs(list) do
 		local yield = i % 10 == 0
 		extraEnv(func)(i,v,yield)
 		if yield then
