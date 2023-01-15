@@ -14,7 +14,7 @@ local function range(min,max,func)
 	end
 end
 local function read(data,func)
-	for i,v pairs(data) do
+	for i,v in pairs(data) do
 		local yield = i % 10 == 0
 		extraEnv(func)(i,v,yield)
 		if yield then
@@ -24,7 +24,7 @@ local function read(data,func)
 end
 local function while(func)
 	local number = {0}
-	while task.wait() do
+	while true do
 		number[1] = number[1] + 1
 		local yield = number[1] % 10 == 0
 		extraEnv(func)(yield)
