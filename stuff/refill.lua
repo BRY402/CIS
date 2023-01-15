@@ -1,6 +1,6 @@
 local http = game:GetService("HttpService")
-local blacklist = {"Explosions"}
 local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
+local blacklist = {"Explosions"}
 local protect
 local function ondeletion(data)
 	local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
