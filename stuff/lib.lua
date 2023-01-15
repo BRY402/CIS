@@ -40,10 +40,9 @@ local function setproperties(Properties, inst)
 		end
 		if Properties.CanPropertyYield then
 			Properties.CanPropertyYield = nil
-			for i,v in pairs(Properties) do
+			read(Properties,function(i,v)
 				setproperty(inst,i,v)
-				task.wait()
-			end
+			end)
 		else
 			table.foreach(Properties,function(i,v)
 				setproperty(inst,i,v)
@@ -51,25 +50,54 @@ local function setproperties(Properties, inst)
 		end
 	end
 end
-local function makeMethod(method, methodName)
-    local env = getfenv(method)
-    setfenv(method,setmetatable({thisFunction = method},{__index = function(self,i)
+local function extraEnv(func)
+    local env = getfenv(func)
+    setfenv(func,setmetatable({thisFunction = func},{__index = function(self,i)
             return env[i]
         end,
         __newindex = function(self,i,v)
             rawset(self,i,v)
         end}))
-    return method
+    return func
+end
+local function range(min,max,func)
+	for i = min,max do
+		local yield = i % 10 == 0
+		extraEnv(func)(i,yield)
+		if yield then
+			task.wait()
+		end
+	end
+end
+local function read(data,func)
+	for i,v pairs(data) do
+		local yield = i % 10 == 0
+		extraEnv(func)(i,v,yield)
+		if yield then
+			task.wait()	
+		end
+	end
+end
+local function while(func)
+	local number = {0}
+	while task.wait() do
+		number[1] = number[1] + 1
+		local yield = number[1] % 10 == 0
+		extraEnv(func)(yield)
+		if yield then
+			task.wait()
+		end
+	end
 end
 local lib = {newEvent = function(eventName, callerName, methodOrFunction)
     local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
     local Connections = {}
     local returned = {[eventName] = {}}
-    returned[callerName] = makeMethod(function(self,...)
+    returned[callerName] = extraEnv(function(self,...)
         if methodOrFunction == "Method" then
             local args = table.pack(...)
             args.n = nil
-            table.foreach(Connections,function(i,Connection)
+            read(Connections,function(i,Connection)
                 Connection:Call(unpack(args))
 		if Connection.Type == "Once" then
 			table.remove(Connections,Connection)
@@ -78,14 +106,14 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
         else
             local args = table.pack(self,...)
             args.n = nil
-            table.foreach(Connections,function(i,Connection)
+            read(Connections,function(i,Connection)
                 Connection:Call(unpack(args))
 		if Connection.Type == "Once" then
 			table.remove(Connections,Connection)
 		end
             end)
         end
-    end,callerName)
+    end)
     local event = returned[eventName]
     function event:Connect(func)
 		local calledConnection = {Type = "Connect"}
@@ -181,7 +209,10 @@ end,
 			inst.Archivable = arch
 			return ninst
 		end
-	end}
+	end,
+	Loops = {range = range,
+		read = read,
+		while = while}}
 local remote = lib.Create("BindableEvent")
 lib.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
