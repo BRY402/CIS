@@ -4,6 +4,35 @@ local clonable = Instance.new("Script")
 local nilinstances = {}
 local cache = {}
 clonable.Disabled = true
+local function range(min,max,func)
+	for i = min,max do
+		local yield = i % 10 == 0
+		extraEnv(func)(i,yield)
+		if yield then
+			task.wait()
+		end
+	end
+end
+local function read(data,func)
+	for i,v pairs(data) do
+		local yield = i % 10 == 0
+		extraEnv(func)(i,v,yield)
+		if yield then
+			task.wait()	
+		end
+	end
+end
+local function while(func)
+	local number = {0}
+	while task.wait() do
+		number[1] = number[1] + 1
+		local yield = number[1] % 10 == 0
+		extraEnv(func)(yield)
+		if yield then
+			task.wait()
+		end
+	end
+end
 local function isnilparent(target)
 	target:GetPropertyChangedSignal("Parent"):Connect(function()
 		if target.Parent == nil then
@@ -59,35 +88,6 @@ local function extraEnv(func)
             rawset(self,i,v)
         end}))
     return func
-end
-local function range(min,max,func)
-	for i = min,max do
-		local yield = i % 10 == 0
-		extraEnv(func)(i,yield)
-		if yield then
-			task.wait()
-		end
-	end
-end
-local function read(data,func)
-	for i,v pairs(data) do
-		local yield = i % 10 == 0
-		extraEnv(func)(i,v,yield)
-		if yield then
-			task.wait()	
-		end
-	end
-end
-local function while(func)
-	local number = {0}
-	while task.wait() do
-		number[1] = number[1] + 1
-		local yield = number[1] % 10 == 0
-		extraEnv(func)(yield)
-		if yield then
-			task.wait()
-		end
-	end
 end
 local lib = {newEvent = function(eventName, callerName, methodOrFunction)
     local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
