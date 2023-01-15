@@ -32,7 +32,7 @@ local function read(list,func)
 		end
 	end
 end
-local function while(func)
+local function forever(func)
 	local number = {0}
 	while true do
 		number[1] = number[1] + 1
@@ -212,7 +212,7 @@ end,
 	end,
 	Loops = {range = range,
 		read = read,
-		while = while}}
+		forever = forever}}
 local remote = lib.Create("BindableEvent")
 lib.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
