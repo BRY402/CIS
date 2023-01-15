@@ -1,84 +1,67 @@
 local http = game:GetService("HttpService")
-local reps = game:GetService("ReplicatedStorage")
 local blacklist = {"Explosions"}
 local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local protect
-local function createProtectConnection(inst: Instance, list: table)
-		local Connection = {Connections = {},
-		OnDestroy = {},
-		OnModifyList = list or {},
-		Main = inst,
-		Last = nil}
-		function Connection.OnDestroy:Connect(func)
-			local at = typeof(func)
-			assert(at == "function","Attempt to connect with type "..at)
-			table.insert(Connection.Connections,func)
+local function ondeletion(data)
+	local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
+	local cloneinst = lib.Clone(data.Clone)
+	if cloneinst then
+		if cloneinst:IsA("BasePart") then
+			cloneinst.CFrame = newcf
 		end
-		Connection.Protector = {OnDestroy = Connection.OnDestroy,
-		Main = inst,
-		Last = nil}
-	return Connection
+		pcall(function()
+			cloneinst.Parent = data.Parent
+			data.Current.Parent = nil
+		end)
+		local newEvent = protect(cloneinst)
+		lib.Destroy(data.Current)
+		data.Event:CallOnDestroy(cloneinst,data.Current)
+		newEvent.CallOnDestroy = data.Event.CallOnDestroy
+	end
 end
-local function protectInstance(Connection: table)
-	local inst = Connection.Main
+function protect(inst: Instance,changelist)
 	if inst then
 		if table.find(blacklist,inst.ClassName) then
 			warn("Blacklisted instance type")
 			return
 		end
-		local destroyed = {false}
-		local oc = lib.Clone(inst)
-		local op = inst.Parent
-		local function ondeletion(ncf)
-			if not destroyed[1] then
-				destroyed[1] = true
-				local ncf = ncf or inst:IsA("BasePart") and inst.CFrame or CFrame.identity
-				local clinst = lib.Clone(oc)
-				if clinst then
-					if clinst:IsA("BasePart") then
-						table.foreach(inst:GetJoints(),function(i,v)
-							v.Part0 = v.Part0 == inst and clinst or v.Part0
-							v.Part1 = v.Part1 == inst and clinst or v.Part1
-						end)
-						clinst.CFrame = ncf
-					end
-					pcall(function()
-						clinst.Parent = op
-						inst.Parent = reps
-					end)
-					lib.Destroy(inst)
-					table.foreach(Connection.Connections,function(x,y)
-						task.spawn(y,clinst,inst)
-					end)
-					protect({clinst,inst},Connection)
-				end
-			end
+		local event = lib.newEvent("OnDestroy","CallOnDestroy")
+		local oldclone = lib.Clone(inst)
+		local oldparent = inst.Parent
+		inst.Destroying:Once(function()
+			ondeletion({Event = event,
+				CFrame = inst.CFrame,
+				Current = inst,
+				Clone = oldclone,
+				Parent = oldparent})
+		end)
+		if changelist then
+			lib.Loops.read(changelist,function(i,v,yielding)
+				inst:GetPropertyChangedSignal(v):Once(function()
+					ondeletion({Event = event,
+						CFrame = inst.CFrame,
+						Current = inst,
+						Clone = oldclone,
+						Parent = oldparent})
+				end)
+			end)
 		end
-		inst.Destroying:Once(ondeletion)
 		if inst:IsA("BasePart") then
-			inst:GetPropertyChangedSignal("CFrame"):Connect(function()
+			inst:GetPropertyChangedSignal("CFrame"):Once(function()
 				if inst.Position.Y <= -50 then
-					ondeletion(CFrame.identity)
+					ondeletion({Event = event,
+						CFrame = CFrame.identity,
+						Current = inst,
+						Clone = oldclone,
+						Parent = oldparent})
 				end
 			end)
 		end
-		inst:GetPropertyChangedSignal("Parent"):Once(ondeletion)
-		table.foreach(Connection.OnModifyList,function(i,v)
-			inst:GetPropertyChangedSignal(tostring(v)):Once(ondeletion)
-		end)
-		return Connection.Protector
+		return event
 	end
 end
-local function createProtect(inst: Instance, list: table)
-	local Connection = createProtectConnection(inst,list)
-	local Protector = protectInstance(Connection)
-	return Protector
-end
-function protect(ins: table, Connection: table)
-	Connection.Main = ins[1]
-	Connection.Last = ins[2]
-	Connection.Protector.Main = ins[1]
-	Connection.Protector.Last = ins[2]
-	protectInstance(Connection)
+local function createProtect(...)
+	local event = protect(...)
+	return {OnDestroy = event.OnDestroy}
 end
 return createProtect
