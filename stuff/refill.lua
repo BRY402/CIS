@@ -1,5 +1,5 @@
-local http = game:GetService("HttpService")
-local lib = loadstring(http:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
+local HttpService = game:GetService("HttpService")
+local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local blacklist = {"Explosions"}
 local protect
 local function ondeletion(data)
