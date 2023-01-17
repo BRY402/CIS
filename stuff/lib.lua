@@ -201,7 +201,7 @@ lib.Create = function(Class, Parent, Properties)
 		else
 			realInst = lib.Clone(createdClonableInst)
 		end
-		if ri ~= nil then
+		if realInst ~= nil then
 			if Properties and Properties ~= true then
 				setproperties(Properties,realInst)
 			elseif Properties == true then
