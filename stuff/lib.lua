@@ -180,7 +180,7 @@ end,
 		if inst then
 			local archivable = inst.Archivable
 			inst.Archivable = true
-			local newInst = clonable.Clone(inst)
+			local newInst = storage.clonable.Clone(inst)
 			inst.Archivable = archivable
 			return newInst
 		end
