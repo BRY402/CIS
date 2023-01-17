@@ -1,9 +1,7 @@
 local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
-local clonable = Instance.new("Script")
+local storage = {}
 local nilinstances = {}
-local cache = {}
-clonable.Disabled = true
 local function extraEnv(func)
     local env = getfenv(func)
     setfenv(func,setmetatable({thisFunction = func},{__index = function(self,i)
@@ -155,34 +153,6 @@ local lib = {newEvent = function(eventName, callerName, methodOrFunction)
 	event.once = event.Once
     return returned
 end,
-	Create = function(Class, Parent, Properties)
-		local ri
-		local cci = cache[Class]
-		if not cci then
-			local inst = Instance.new(Class)
-			cache[Class] = inst
-			inst.Archivable = true
-			ri = clonable.Clone(inst)
-		else
-			cci.Archivable = true
-			ri = clonable.Clone(cci)
-		end
-		if ri ~= nil then
-			if Properties and Properties ~= true then
-				setproperties(Properties,ri)
-			elseif Properties == true then
-				return function(Properties)
-					setproperties(Properties,ri)
-					ri.Parent = Parent
-					isnilparent(ri)
-					return ri
-				end
-			end
-			ri.Parent = Parent
-			isnilparent(ri)
-		end
-		return ri
-	end,
 	Random = function(min, max, seed)
 		local nrs = Random.new(seed or os.clock())
 		if min and max then
@@ -203,17 +173,50 @@ end,
 		return nilinstances
 	end,
 	Clone = function(inst)
+		if not storage.clonable then
+			storage.clonable = Instance.new("Script")
+			storage.clonable.Disabled = true
+		end
 		if inst then
-			local arch = inst.Archivable
+			local archivable = inst.Archivable
 			inst.Archivable = true
-			local ninst = clonable.Clone(inst)
-			inst.Archivable = arch
-			return ninst
+			local newInst = clonable.Clone(inst)
+			inst.Archivable = archivable
+			return newInst
 		end
 	end,
 	Loops = {range = range,
 		read = read,
 		forever = forever}}
+lib.Create = function(Class, Parent, Properties)
+		if not storage.cache then
+			storage.cache = {}
+		end
+		local realInst
+		local createdClonableInst = storage.cache[Class]
+		if not createdClonableInst then
+			local inst = Instance.new(Class)
+			storage.cache[Class] = inst
+			realInst = lib.Clone(inst)
+		else
+			realInst = lib.Clone(createdClonableInst)
+		end
+		if ri ~= nil then
+			if Properties and Properties ~= true then
+				setproperties(Properties,realInst)
+			elseif Properties == true then
+				return function(Properties)
+					setproperties(Properties,realInst)
+					realInst.Parent = Parent
+					isnilparent(realInst)
+					return realInst
+				end
+			end
+			realInst.Parent = Parent
+			isnilparent(realInst)
+		end
+		return realInst
+	end
 local remote = lib.Create("BindableEvent")
 lib.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
