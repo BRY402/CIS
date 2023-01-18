@@ -17,8 +17,8 @@ local carter = {new = function(api_key,scene)
 		Chatted = BotChatted.Chatted}
 	function bot:Send(msg,player)
 		assert(storage.CanChat,"Bot#"..tostring(table.find(bots,bot)).." disabled")
-		local id = player.UserId
-		if not table.find(storage.ids,id) then
+		local id = player and player.UserId or 0
+		if player and not table.find(storage.ids,id) then
 			table.insert(storage.ids,id)
 			ChatterEvent:AddChatter(player)
 		end
