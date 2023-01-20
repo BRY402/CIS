@@ -11,8 +11,8 @@ local carter = {new = function(api_key,scene)
 	if scene then
 		storage.scene = tostring(scene)
 	end
-	local ChatterEvent = lib.newEvent("ChatterAdded","AddChatter")
-	local BotChatted = lib.newEvent("Chatted","Chat")
+	local ChatterEvent = lib.Utilities.newEvent("ChatterAdded","AddChatter")
+	local BotChatted = lib.Utilities.newEvent("Chatted","Chat")
 	local bot = {ChatterAdded = ChatterEvent.ChatterAdded,
 		Chatted = BotChatted.Chatted}
 	function bot:Send(msg,player)
