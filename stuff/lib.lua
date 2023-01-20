@@ -2,14 +2,20 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local storage = {}
 local nilinstances = {}
-local function extraEnv(func)
+local function extraEnv(func, self)
     local env = getfenv(func)
-    setfenv(func,setmetatable({thisFunction = func, _ENV = env},{__index = function(self,i)
-            return env[i]
-        end,
-        __newindex = function(self,i,v)
-            rawset(self,i,v)
-        end}))
+    setfenv(func,setmetatable({
+				thisFunction = func,
+				_ENV = env,
+				self = self
+			},{
+				__index = function(self,i)
+					return env[i]
+				end,
+				__newindex = function(self,i,v)
+					rawset(self,i,v)
+				end
+			}))
     return func
 end
 local function range(min, max, add, func)
@@ -24,7 +30,7 @@ end
 local function read(list, func)
 	for i,v in pairs(list) do
 		local yield = i % 10 == 0
-		extraEnv(func)(i,v,yield)
+		extraEnv(func, list)(i , v, yield)
 		if yield then
 			task.wait()	
 		end
