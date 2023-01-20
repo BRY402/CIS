@@ -188,7 +188,7 @@ local lib = {
 			return nilinstances
 		end,
 		Pack = packtuple
-	}
+	},
 	Destroy = function(ins,delay)
 		deb:AddItem(ins,tonumber(delay) or 0)
 	end,
