@@ -24,7 +24,7 @@ function protect(inst: Instance,changelist)
 			warn("Blacklisted instance type")
 			return
 		end
-		local event = lib.newEvent("OnDestroy","CallOnDestroy")
+		local event = lib.Utilities.newEvent("OnDestroy","CallOnDestroy")
 		local oldclone = lib.Clone(inst)
 		local oldparent = inst.Parent
 		inst.Destroying:Once(function()
