@@ -4,7 +4,7 @@ local storage = {}
 local nilinstances = {}
 local function extraEnv(func)
     local env = getfenv(func)
-    setfenv(func,setmetatable({thisFunction = func},{__index = function(self,i)
+    setfenv(func,setmetatable({thisFunction = func, _ENV = env},{__index = function(self,i)
             return env[i]
         end,
         __newindex = function(self,i,v)
