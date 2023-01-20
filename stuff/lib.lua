@@ -2,26 +2,10 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local storage = {}
 local nilinstances = {}
-local function extraEnv(func, self)
-    local env = getfenv(func)
-    setfenv(func,setmetatable({
-				thisFunction = func,
-				_ENV = env,
-				self = self
-			},{
-				__index = function(self,i)
-					return env[i]
-				end,
-				__newindex = function(self,i,v)
-					rawset(self,i,v)
-				end
-			}))
-    return func
-end
 local function range(min, max, add, func)
 	for i = min, max, add do
 		local yield = i % 10 == 0
-		extraEnv(func)(i,yield)
+		func(i, yield)
 		if yield then
 			task.wait()
 		end
@@ -30,7 +14,7 @@ end
 local function read(list, func)
 	for i,v in pairs(list) do
 		local yield = i % 10 == 0
-		extraEnv(func, list)(i , v, yield)
+		func(i , v, yield)
 		if yield then
 			task.wait()	
 		end
@@ -42,7 +26,7 @@ local function forever(func)
 		local n = number[1]
 		number[1] = n + 1
 		local yield = n % 10 == 0
-		extraEnv(func)(n,yield)
+		func(n, yield)
 		if yield then
 			task.wait()
 		end
@@ -105,7 +89,7 @@ local lib = {
 		    local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
 		    local Connections = {}
 		    local returned = {[eventName] = {}}
-		    returned[callerName] = extraEnv(function(self,...)
+		    returned[callerName] = function(self,...)
 			if methodOrFunction == "Method" then
 			    local args = packtuple(...)
 			    read(Connections,function(i,Connection)
@@ -123,7 +107,7 @@ local lib = {
 				end
 			    end)
 			end
-		    end)
+		    end
 		    local event = returned[eventName]
 		    function event:Connect(func)
 				local calledConnection = {Type = "Connect"}
