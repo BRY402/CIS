@@ -12,8 +12,8 @@ local function extraEnv(func)
         end}))
     return func
 end
-local function range(min,max,func)
-	for i = min,max do
+local function range(min, max, add, func)
+	for i = min, max, add do
 		local yield = i % 10 == 0
 		extraEnv(func)(i,yield)
 		if yield then
@@ -21,7 +21,7 @@ local function range(min,max,func)
 		end
 	end
 end
-local function read(list,func)
+local function read(list, func)
 	for i,v in pairs(list) do
 		local yield = i % 10 == 0
 		extraEnv(func)(i,v,yield)
