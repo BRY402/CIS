@@ -88,89 +88,119 @@ local function setproperties(Properties, inst)
 		end
 	end
 end
-local lib = {newEvent = function(eventName, callerName, methodOrFunction)
-    local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
-    local Connections = {}
-    local returned = {[eventName] = {}}
-    returned[callerName] = extraEnv(function(self,...)
-        if methodOrFunction == "Method" then
-            local args = table.pack(...)
-            args.n = nil
-            read(Connections,function(i,Connection)
-                Connection:Call(unpack(args))
-		if Connection.Type == "Once" then
-			table.remove(Connections,Connection)
-		end
-            end)
-        else
-            local args = table.pack(self,...)
-            args.n = nil
-            read(Connections,function(i,Connection)
-                Connection:Call(unpack(args))
-		if Connection.Type == "Once" then
-			table.remove(Connections,Connection)
-		end
-            end)
-        end
-    end)
-    local event = returned[eventName]
-    function event:Connect(func)
-		local calledConnection = {Type = "Connect"}
-		function calledConnection:Call(...)
-			task.spawn(func,...)
-		end
-        table.insert(Connections,calledConnection)
-        local Connection = {}
-        function Connection:Disconnect()
-            assert(table.find(Connections,func),"Connection was already disconnected")
-            table.remove(Connections,func)
-        end
-        Connection.disconnect = Connection.Disconnect
-        return Connection
-    end
-	function event:ConnectParallel(...)
-		assert(script:GetActor(),"Script must have an actor")
-		task.desynchronize()
-		task.spawn(func,...)
-	end
-	function event:Once(func)
-		local calledConnection = {Type = "Once"}
-		function calledConnection:Call(...)
-			task.spawn(func,...)
-		end
-        table.insert(Connections,calledConnection)
-        local Connection = {Connected = true}
-        function Connection:Disconnect()
-            assert(table.find(Connections,func),"Connection was already disconnected")
-			Connection.Connected = false
-            table.remove(Connections,func)
-        end
-        Connection.disconnect = Connection.Disconnect
-        return Connection
-	end
-    event.connect = event.Connect
-	event.connectparallel = event.ConnectParallel
-	event.once = event.Once
-    return returned
-end,
-	Random = function(min, max, seed)
-		local nrs = Random.new(seed or os.clock())
-		if min and max then
-			int = nrs:NextInteger(min,max)
-			num = nrs:NextNumber(min,max)
-		else
-			int = 0
-			num = nrs:NextNumber()
-		end
-		local unit = nrs:NextUnitVector()
-		local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
-		return rt
-	end,
+local function packtuple(...)
+	local packed = table.pack(...)
+	packed.n = nil
+	return packed
+end
+local lib = {
+	Utilities = {
+		newEvent = function(eventName, callerName, methodOrFunction)
+		    local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
+		    local Connections = {}
+		    local returned = {[eventName] = {}}
+		    returned[callerName] = extraEnv(function(self,...)
+			if methodOrFunction == "Method" then
+			    local args = packtuple(...)
+			    read(Connections,function(i,Connection)
+				Connection:Call(unpack(args))
+				if Connection.Type == "Once" or Connection.Type == "Wait" then
+					table.remove(Connections,Connection)
+				end
+			    end)
+			else
+			    local args = packtuple(self,...)
+			    read(Connections,function(i,Connection)
+				Connection:Call(unpack(args))
+				if Connection.Type == "Once" or Connection.Type == "Wait" then
+					table.remove(Connections,Connection)
+				end
+			    end)
+			end
+		    end)
+		    local event = returned[eventName]
+		    function event:Connect(func)
+				local calledConnection = {Type = "Connect"}
+				function calledConnection:Call(...)
+					task.spawn(func,...)
+				end
+				table.insert(Connections,calledConnection)
+				local Connection = {}
+				function Connection:Disconnect()
+					assert(table.find(Connections,func),"Connection was already disconnected")
+					table.remove(Connections,func)
+				end
+				Connection.disconnect = Connection.Disconnect
+				return Connection
+			end
+			function event:ConnectParallel(func)
+				assert(script:GetActor(),"Script must have an actor")
+				local calledConnection = {Type = "ConnectParellel"}
+				function calledConnection:Call(...)
+					task.desynchronize()
+					task.spawn(func,...)
+				end
+				table.insert(Connections,calledConnection)
+				local Connection = {}
+				function Connection:Disconnect()
+					assert(table.find(Connections,func),"Connection was already disconnected")
+					table.remove(Connections,func)
+				end
+				Connection.disconnect = Connection.Disconnect
+				return Connection
+			end
+			function event:Once(func)
+				local calledConnection = {Type = "Once"}
+				function calledConnection:Call(...)
+					task.spawn(func,...)
+				end
+				table.insert(Connections,calledConnection)
+				local Connection = {Connected = true}
+				function Connection:Disconnect()
+				    assert(table.find(Connections,func),"Connection was already disconnected")
+						Connection.Connected = false
+				    table.remove(Connections,func)
+				end
+				Connection.disconnect = Connection.Disconnect
+				return Connection
+			end
+			function event:Wait()
+				local calledConnection = {Type = "Wait"}
+				function calledConnection:Call(...)
+					self.Arguments = packtuple(...)
+				end
+				table.insert(Connections,calledConnection)
+				repeat
+					task.wait()
+				until calledConnection.Arguments
+				return table.unpack(calledConnection.Arguments)
+			end
+			event.connect = event.Connect
+			event.connectparallel = event.ConnectParallel
+			event.once = event.Once
+			event.wait = event.Wait
+		    return returned
+		end,
+		Random = function(min, max, seed)
+			local nrs = Random.new(seed or os.clock())
+			if min and max then
+				int = nrs:NextInteger(min,max)
+				num = nrs:NextNumber(min,max)
+			else
+				int = 0
+				num = nrs:NextNumber()
+			end
+			local unit = nrs:NextUnitVector()
+			local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
+			return rt
+		end,
+		GetNil = function()
+			return nilinstances
+		end,
+		Pack = packtuple
+	}
 	Destroy = function(ins,delay)
 		deb:AddItem(ins,tonumber(delay) or 0)
-	end,
-	GetNil = function()
-		return nilinstances
 	end,
 	Clone = function(inst)
 		if not storage.clonable then
@@ -185,9 +215,12 @@ end,
 			return newInst
 		end
 	end,
-	Loops = {range = range,
+	Loops = {
+		range = range,
 		read = read,
-		forever = forever}}
+		forever = forever
+	}
+}
 lib.Create = function(Class, Parent, Properties)
 		if not storage.cache then
 			storage.cache = {}
@@ -218,7 +251,7 @@ lib.Create = function(Class, Parent, Properties)
 		return realInst
 	end
 local remote = lib.Create("BindableEvent")
-lib.fastSpawn = function(func, ...)
+lib.Utilities.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
 	remote:Fire(...)
 end
