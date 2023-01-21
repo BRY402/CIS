@@ -4,7 +4,7 @@ local storage = {}
 local nilinstances = {}
 local function range(min, max, add, func)
 	for i = min, max, add do
-		local yield = i % 10 == 0
+		local yield = i % (10 * add) == 0
 		func(i, yield)
 		if yield then
 			task.wait()
@@ -16,7 +16,7 @@ local function read(list, func)
 	for i,v in pairs(list) do
 		local n = number[1]
 		number[1] = n + 1
-		local yield = n % 10 == 0
+		local yield = (n + 1) % 10 == 0
 		func(i , v, yield)
 		if yield then
 			task.wait()	
@@ -28,7 +28,7 @@ local function forever(func)
 	while true do
 		local n = number[1]
 		number[1] = n + 1
-		local yield = n % 10 == 0
+		local yield = (n + 1) % 10 == 0
 		func(n, yield)
 		if yield then
 			task.wait()
