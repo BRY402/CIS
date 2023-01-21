@@ -36,6 +36,11 @@ local function forever(func)
 	end
 end
 local function isnilparent(target)
+		if target.Parent == nil then
+			table.insert(nilinstances,target)
+		else
+			table.remove(nilinstances,table.find(nilinstances,target))
+		end
 	target:GetPropertyChangedSignal("Parent"):Connect(function()
 		if target.Parent == nil then
 			table.insert(nilinstances,target)
@@ -248,4 +253,5 @@ lib.Utilities.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
 	remote:Fire(...)
 end
+game.DescendantRemoving:Connect(isnilparent)
 return lib
