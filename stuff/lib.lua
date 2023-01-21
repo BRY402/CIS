@@ -12,8 +12,11 @@ local function range(min, max, add, func)
 	end
 end
 local function read(list, func)
+	local number = {0}
 	for i,v in pairs(list) do
-		local yield = i % 10 == 0
+		local n = number[1]
+		number[1] = n + 1
+		local yield = n % 10 == 0
 		func(i , v, yield)
 		if yield then
 			task.wait()	
