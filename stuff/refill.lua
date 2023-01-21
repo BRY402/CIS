@@ -34,6 +34,13 @@ function protect(inst: Instance,changelist)
 				Clone = oldclone,
 				Parent = oldparent})
 		end)
+		inst:GetPropertyChangedSignal("Parent"):Once(function()
+			ondeletion({Event = event,
+				CFrame = inst.CFrame,
+				Current = inst,
+				Clone = oldclone,
+				Parent = oldparent})
+		end)
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
 				inst:GetPropertyChangedSignal(v):Once(function()
