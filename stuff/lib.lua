@@ -239,12 +239,10 @@ lib.Create = function(Class, Parent, Properties)
 				return function(Properties)
 					setproperties(Properties,realInst)
 					realInst.Parent = Parent
-					isnilparent(realInst)
 					return realInst
 				end
 			end
 			realInst.Parent = Parent
-			isnilparent(realInst)
 		end
 		return realInst
 	end
