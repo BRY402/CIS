@@ -207,118 +207,6 @@ local lib = {
 			event.wait = event.Wait
 		    return returned
 		end,
-		newMetatable = function(public)
-			local publicMeta = getmetatable(public)
-			local publicStorage = typeof(public) == "userdata" and typeof(publicMeta) == "table" and {} or nil
-			local hidden = publicStorage and typeof(publicMeta) == "table" and publicMeta or {}
-			lib.Loops.read(publicStorage or public, function(index, value)
-				checkMetamethod(hidden, index, value)
-			end)
-			if publicStorage then
-				lib.Loops.read(publicMeta, function(index, value)
-					publicStorage[index] = value
-				end)
-			end
-			local function Copy(...)
-				if typeof(public) == "table" then
-					local newPublic = {}
-					lib.Loops.read(public, function(index, value)
-						if not table.find(metaMethods, index) then
-							newPublic[index] = value
-						end
-					end)
-					local newHidden = table.clone(hidden)
-					newHidden.__metatable = newPublic
-					setmetatable(newPublic, newHidden)
-					if public.__readonly then
-						local readonly_type = typeof(public.__readonly)
-						assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for metamethod __readonly")
-						local readonly = newproxy(true)
-						local readonlymeta = getmetatable(readonly)
-						readonlymeta.__metatable = "This metatable is locked."
-						readonlymeta.__index = function(self, index)
-							if not table.find(metaMethods, index) then
-								return newPublic[index]
-							end
-						end
-						return readonly, ...
-					else
-						return newPublic, ...
-					end
-				elseif typeof(public) == "userdata" then
-					local newPublic = {}
-					lib.Loops.read(publicStorage, function(index, value)
-						if not table.find(metaMethods, index) then
-							newPublic[index] = value
-						end
-					end)
-					local newHidden = table.clone(hidden)
-					newHidden.__metatable = newPublic
-					setmetatable(newPublic, newHidden)
-					if publicStorage.__readonly then
-						local readonly_type = typeof(publicStorage.__readonly)
-						assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for metamethod __readonly")
-						local readonly = newproxy(true)
-						local readonlymeta = getmetatable(readonly)
-						readonlymeta.__metatable = "This metatable is locked."
-						readonlymeta.__index = function(self, index)
-							if not table.find(metaMethods, index) then
-								return newPublic[index]
-							end
-						end
-						return readonly, ...
-					else
-						return newPublic, ...
-					end
-				end
-			end
-			hidden.__call = function(self, ...)
-				if publicStorage then
-					if publicStorage.__call then
-						local Arguments = lib.Utilities.Pack(publicStorage.__call(self, ...))
-						return Copy(table.unpack(Arguments), publicStorage.__return and typeof(publicStorage.__return) == "table" and table.unpack(publicStorage.__return) or publicStorage.__return)
-					end
-					return Copy(publicStorage.__return and typeof(publicStorage.__return) == "table" and table.unpack(publicStorage.__return) or publicStorage.__return)
-				else
-					if public.__call then
-						local Arguments = lib.Utilities.Pack(public.__call(self, ...))
-						return Copy(table.unpack(Arguments), public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
-					end
-					return Copy(public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
-				end
-			end
-			if publicStorage then
-				hidden.__index = publicStorage.__index or function(self, index)
-					return publicStorage[index]
-				end
-				hidden.__newindex = function(self, index, value)
-					if publicStorage.__newindex then
-						publicStorage.__newindex(self, index, value)
-					else
-						publicStorage[index] = value
-					end
-					checkMetamethod(hidden, index, value)
-				end
-			else
-				hidden.__index = public.__index or rawget
-				hidden.__newindex = function(self, index, value)
-					if public.__newindex then
-						public.__newindex(self, index, value)
-					else
-						rawset(public, index, value)
-					end
-					checkMetamethod(hidden, index, value)
-				end
-			end
-			if typeof(public) == "table" then
-				setmetatable(public, hidden)
-			else
-				lib.Loops.read(hidden, function(index, value)
-					checkMetamethod(publicMeta, index, value)
-				end)
-			end
-			return publicStorage or public
-		end,
 		Random = function(min, max, seed)
 			local nrs = Random.new(seed or os.clock())
 			if min and max then
@@ -360,32 +248,144 @@ local lib = {
 	}
 }
 lib.Create = function(Class, Parent, Properties)
-		if not storage.cache then
-			storage.cache = {}
-		end
-		local realInst
-		local createdClonableInst = storage.cache[Class]
-		if not createdClonableInst then
-			local inst = Instance.new(Class)
-			storage.cache[Class] = inst
-			realInst = lib.Clone(inst)
-		else
-			realInst = lib.Clone(createdClonableInst)
-		end
-		if realInst ~= nil then
-			if Properties and Properties ~= true then
+	if not storage.cache then
+		storage.cache = {}
+	end
+	local realInst
+	local createdClonableInst = storage.cache[Class]
+	if not createdClonableInst then
+		local inst = Instance.new(Class)
+		storage.cache[Class] = inst
+		realInst = lib.Clone(inst)
+	else
+		realInst = lib.Clone(createdClonableInst)
+	end
+	if realInst ~= nil then
+		if Properties and Properties ~= true then
+			setproperties(Properties,realInst)
+		elseif Properties == true then
+			return function(Properties)
 				setproperties(Properties,realInst)
-			elseif Properties == true then
-				return function(Properties)
-					setproperties(Properties,realInst)
-					realInst.Parent = Parent
-					return realInst
+				realInst.Parent = Parent
+				return realInst
+			end
+		end
+		realInst.Parent = Parent
+	end
+	return realInst
+end
+lib.newMetatable = function(public)
+	local publicMeta = getmetatable(public)
+	local publicStorage = typeof(public) == "userdata" and typeof(publicMeta) == "table" and {} or nil
+	local hidden = publicStorage and typeof(publicMeta) == "table" and publicMeta or {}
+	lib.Loops.read(publicStorage or public, function(index, value)
+		checkMetamethod(hidden, index, value)
+	end)
+	if publicStorage then
+		lib.Loops.read(publicMeta, function(index, value)
+			publicStorage[index] = value
+		end)
+	end
+	local function Copy(...)
+		if typeof(public) == "table" then
+			local newPublic = {}
+			lib.Loops.read(public, function(index, value)
+				if not table.find(metaMethods, index) then
+					newPublic[index] = value
+				end
+			end)
+			local newHidden = table.clone(hidden)
+			newHidden.__metatable = newPublic
+			setmetatable(newPublic, newHidden)
+			if public.__readonly then
+				local readonly_type = typeof(public.__readonly)
+				assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for metamethod __readonly")
+				local readonly = newproxy(true)
+				local readonlymeta = getmetatable(readonly)
+				readonlymeta.__metatable = "This metatable is locked."
+				readonlymeta.__index = function(self, index)
+					if not table.find(metaMethods, index) then
+						return newPublic[index]
+					end
+				end
+				return readonly, ...
+			else
+				return newPublic, ...
+			end
+		elseif typeof(public) == "userdata" then
+			local newPublic = {}
+			lib.Loops.read(publicStorage, function(index, value)
+				if not table.find(metaMethods, index) then
+					newPublic[index] = value
+				end
+			end)
+			local newHidden = table.clone(hidden)
+			newHidden.__metatable = newPublic
+			setmetatable(newPublic, newHidden)
+			if publicStorage.__readonly then
+				local readonly_type = typeof(publicStorage.__readonly)
+				assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for metamethod __readonly")
+				local readonly = newproxy(true)
+				local readonlymeta = getmetatable(readonly)
+				readonlymeta.__metatable = "This metatable is locked."
+				readonlymeta.__index = function(self, index)
+				if not table.find(metaMethods, index) then
+					return newPublic[index]
 				end
 			end
-			realInst.Parent = Parent
+				return readonly, ...
+			else
+				return newPublic, ...
+			end
 		end
-		return realInst
 	end
+	hidden.__call = function(self, ...)
+		if publicStorage then
+			if publicStorage.__call then
+				local Arguments = lib.Utilities.Pack(publicStorage.__call(self, ...))
+				return Copy(table.unpack(Arguments), publicStorage.__return and typeof(publicStorage.__return) == "table" and table.unpack(publicStorage.__return) or publicStorage.__return)
+			end
+			return Copy(publicStorage.__return and typeof(publicStorage.__return) == "table" and table.unpack(publicStorage.__return) or publicStorage.__return)
+		else
+			if public.__call then
+				local Arguments = lib.Utilities.Pack(public.__call(self, ...))
+				return Copy(table.unpack(Arguments), public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
+			end
+			return Copy(public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
+		end
+	end
+	if publicStorage then
+		hidden.__index = publicStorage.__index or function(self, index)
+			return publicStorage[index]
+		end
+		hidden.__newindex = function(self, index, value)
+			if publicStorage.__newindex then
+				publicStorage.__newindex(self, index, value)
+			else
+				publicStorage[index] = value
+			end
+			checkMetamethod(hidden, index, value)
+		end
+	else
+		hidden.__index = public.__index or rawget
+		hidden.__newindex = function(self, index, value)
+			if public.__newindex then
+				public.__newindex(self, index, value)
+			else
+				rawset(public, index, value)
+			end
+			checkMetamethod(hidden, index, value)
+		end
+	end
+	if typeof(public) == "table" then
+		setmetatable(public, hidden)
+	else
+		lib.Loops.read(hidden, function(index, value)
+			checkMetamethod(publicMeta, index, value)
+		end)
+	end
+	return publicStorage or public
+end
 local remote = lib.Create("BindableEvent")
 lib.Utilities.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
