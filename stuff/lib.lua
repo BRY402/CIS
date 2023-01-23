@@ -420,10 +420,12 @@ lib.newMetatable = function(public)
 	end
 	return publicStorage or public
 end
-local remote = lib.Create("BindableEvent")
 lib.Utilities.fastSpawn = function(func, ...)
-	remote.Event:Once(func)
-	remote:Fire(...)
+	if not storage.fastSpawnRemote then
+		storage.fastSpawnRemote = lib.Create("BindableEvent")
+	end
+	storage.fastSpawnRemote.Event:Once(func)
+	storage.fastSpawnRemote:Fire(...)
 end
 game.DescendantRemoving:Connect(function(descendant)
 	pcall(isnilparent,descendant)
