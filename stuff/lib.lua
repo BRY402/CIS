@@ -355,23 +355,57 @@ lib.newMetatable = function(public)
 		end
 	end
 	if publicStorage then
-		hidden.__index = publicStorage.__index or function(self, index)
-			return publicStorage[index]
+		hidden.__index = function(self, index)
+			local value = publicStorage[index]
+			if publicStorage.__index then
+				return publicStorage[index]
+			end
+			if value and typeof(value) == "table" then
+				if value.__TableValue then
+					return value.__TableValue
+				end
+			end
 		end
 		hidden.__newindex = function(self, index, value)
 			if publicStorage.__newindex then
 				publicStorage.__newindex(self, index, value)
 			else
+				local oldValue = publicStorage[index]
+				if oldValue and typeof(oldValue) == "table" then
+					if oldValue.__TableReadOnly then
+						local readonly_type = typeof(oldValue.__TableReadOnly)
+						assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for table method __TableReadOnly")
+						error("Attempt to set read-only value")
+					end
+				end
 				publicStorage[index] = value
 			end
 			checkMetamethod(hidden, index, value)
 		end
 	else
-		hidden.__index = public.__index or rawget
+		hidden.__index = function(self, index)
+			local value = rawget(self, index)
+			if public.__index then
+				return public.__index(self, index)
+			end
+			if value and typeof(value) == "table" then
+				if value.__TableValue then
+					return value.__TableValue
+				end
+			end
+		end
 		hidden.__newindex = function(self, index, value)
 			if public.__newindex then
 				public.__newindex(self, index, value)
 			else
+				local oldValue = rawget(self, index)
+				if oldValue and typeof(oldValue) == "table" then
+					if oldValue.__TableReadOnly then
+						local readonly_type = typeof(oldValue.__TableReadOnly)
+						assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for table method __TableReadOnly")
+						error("Attempt to set read-only value")
+					end
+				end
 				rawset(public, index, value)
 			end
 			checkMetamethod(hidden, index, value)
