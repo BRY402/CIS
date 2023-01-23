@@ -251,5 +251,7 @@ lib.Utilities.fastSpawn = function(func, ...)
 	remote.Event:Once(func)
 	remote:Fire(...)
 end
-game.DescendantRemoving:Connect(isnilparent)
+game.DescendantRemoving:Connect(function(descendant)
+	pcall(isnilparent,descendant)
+end)
 return lib
