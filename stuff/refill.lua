@@ -48,6 +48,7 @@ function protect(inst: Instance,changelist)
 				Parent = oldparent,
 				Destroyed = destroyed})
 		end)
+		print(changelist)
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
 				inst:GetPropertyChangedSignal(v):Once(function()
