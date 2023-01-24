@@ -274,7 +274,7 @@ lib.Create = function(Class, Parent, Properties)
 	end
 	return realInst
 end
-lib.newMetatable = function(public)
+lib.Utilities.newMetatable = function(public)
 	local publicMeta = getmetatable(public)
 	local publicStorage = typeof(public) == "userdata" and typeof(publicMeta) == "table" and {} or nil
 	local hidden = publicStorage and typeof(publicMeta) == "table" and publicMeta or {}
