@@ -64,7 +64,7 @@ function protect(inst: Instance,changelist)
 						Parent = oldparent,
 						Destroyed = destroyed,
 						ChangeList = changelist,
-						ChangedValue = v
+						ChangedValue = v,
 						OldValue = lastValue
 					})
 				end)
