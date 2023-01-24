@@ -3,19 +3,23 @@ local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-sc
 local blacklist = {"Explosions"}
 local protect
 local function ondeletion(data)
-	local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
-	local cloneinst = lib.Clone(data.Clone)
-	lib.Destroy(data.Current)
-	if cloneinst then
-		if cloneinst:IsA("BasePart") then
-			cloneinst.CFrame = newcf
+	if not data.Destroyed[1] then
+		data.Destroyed[1] = true
+		local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
+		local cloneinst = lib.Clone(data.Clone)
+		lib.Destroy(data.Current)
+		if cloneinst then
+			if cloneinst:IsA("BasePart") then
+				cloneinst.CFrame = newcf
+			end
+			pcall(function()
+				cloneinst.Parent = data.Parent
+			end)
+			data.Event:CallOnDestroy(cloneinst,data.Current)
+			task.wait()
+			local newEvent = protect(cloneinst)
+			newEvent.CallOnDestroy = data.Event.CallOnDestroy
 		end
-		pcall(function()
-			cloneinst.Parent = data.Parent
-		end)
-		local newEvent = protect(cloneinst)
-		data.Event:CallOnDestroy(cloneinst,data.Current)
-		newEvent.CallOnDestroy = data.Event.CallOnDestroy
 	end
 end
 function protect(inst: Instance,changelist)
@@ -27,19 +31,22 @@ function protect(inst: Instance,changelist)
 		local event = lib.Utilities.newEvent("OnDestroy","CallOnDestroy")
 		local oldclone = lib.Clone(inst)
 		local oldparent = inst.Parent
+		local destroyed = {false}
 		inst.Destroying:Once(function()
 			ondeletion({Event = event,
 				CFrame = inst.CFrame,
 				Current = inst,
 				Clone = oldclone,
-				Parent = oldparent})
+				Parent = oldparent,
+				Destroyed = destroyed})
 		end)
 		inst:GetPropertyChangedSignal("Parent"):Once(function()
 			ondeletion({Event = event,
 				CFrame = inst.CFrame,
 				Current = inst,
 				Clone = oldclone,
-				Parent = oldparent})
+				Parent = oldparent,
+				Destroyed = destroyed})
 		end)
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
@@ -48,7 +55,8 @@ function protect(inst: Instance,changelist)
 						CFrame = inst.CFrame,
 						Current = inst,
 						Clone = oldclone,
-						Parent = oldparent})
+						Parent = oldparent,
+						Destroyed = destroyed})
 				end)
 			end)
 		end
@@ -59,7 +67,8 @@ function protect(inst: Instance,changelist)
 						CFrame = CFrame.identity,
 						Current = inst,
 						Clone = oldclone,
-						Parent = oldparent})
+						Parent = oldparent,
+						Destroyed = destroyed})
 				end
 			end)
 		end
