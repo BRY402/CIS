@@ -385,8 +385,9 @@ lib.Utilities.newMetatable = function(public)
 	else
 		hidden.__index = function(self, index)
 			local value = rawget(self, index)
-			if public.__index then
-				return public.__index(self, index)
+			local __index = rawget(public, "__index")
+			if __index then
+				return __index(self, index)
 			end
 			if value and typeof(value) == "table" then
 				if value.__TableValue then
@@ -395,8 +396,9 @@ lib.Utilities.newMetatable = function(public)
 			end
 		end
 		hidden.__newindex = function(self, index, value)
-			if public.__newindex then
-				public.__newindex(self, index, value)
+			local __newindex = rawget(public, "__newindex")
+			if __newindex then
+				__newindex(self, index, value)
 			else
 				local oldValue = rawget(self, index)
 				if oldValue and typeof(oldValue) == "table" then
