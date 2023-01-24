@@ -365,6 +365,7 @@ lib.Utilities.newMetatable = function(public)
 					return value.__TableValue
 				end
 			end
+			return value
 		end
 		hidden.__newindex = function(self, index, value)
 			if publicStorage.__newindex then
@@ -394,6 +395,7 @@ lib.Utilities.newMetatable = function(public)
 					return value.__TableValue
 				end
 			end
+			return value
 		end
 		hidden.__newindex = function(self, index, value)
 			local __newindex = rawget(public, "__newindex")
