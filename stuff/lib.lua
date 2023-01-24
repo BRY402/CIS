@@ -385,7 +385,7 @@ lib.Utilities.newMetatable = function(public)
 		end
 	else
 		hidden.__index = function(self, index)
-			local value = rawget(self, index)
+			local value = rawget(public, index)
 			local __index = rawget(public, "__index")
 			if __index then
 				return __index(self, index)
@@ -402,7 +402,7 @@ lib.Utilities.newMetatable = function(public)
 			if __newindex then
 				__newindex(self, index, value)
 			else
-				local oldValue = rawget(self, index)
+				local oldValue = rawget(public, index)
 				if oldValue and typeof(oldValue) == "table" then
 					if oldValue.__TableReadOnly then
 						local readonly_type = typeof(oldValue.__TableReadOnly)
