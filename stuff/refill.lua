@@ -12,11 +12,14 @@ local function ondeletion(data)
 			if cloneinst:IsA("BasePart") then
 				cloneinst.CFrame = newcf
 			end
+			if data.ChangedValue then
+				cloneinst[data.ChangedValue] = data.OldValue
+			end
+			data.Event:CallOnDestroy(cloneinst,data.Current)
+			task.wait()
 			pcall(function()
 				cloneinst.Parent = data.Parent
 			end)
-			data.Event:CallOnDestroy(cloneinst,data.Current)
-			task.wait()
 			local newEvent = protect(cloneinst, data.ChangeList)
 			newEvent.CallOnDestroy = data.Event.CallOnDestroy
 		end
@@ -52,6 +55,7 @@ function protect(inst: Instance,changelist)
 		end)
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
+				local lastValue = inst[v]
 				inst:GetPropertyChangedSignal(v):Once(function()
 					ondeletion({Event = event,
 						CFrame = inst.CFrame,
@@ -59,7 +63,9 @@ function protect(inst: Instance,changelist)
 						Clone = oldclone,
 						Parent = oldparent,
 						Destroyed = destroyed,
-						ChangeList = changelist
+						ChangeList = changelist,
+						ChangedValue = v
+						OldValue = lastValue
 					})
 				end)
 			end)
