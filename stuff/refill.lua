@@ -17,7 +17,7 @@ local function ondeletion(data)
 			end)
 			data.Event:CallOnDestroy(cloneinst,data.Current)
 			task.wait()
-			local newEvent = protect(cloneinst)
+			local newEvent = protect(cloneinst, data.ChangeList)
 			newEvent.CallOnDestroy = data.Event.CallOnDestroy
 		end
 	end
@@ -38,7 +38,8 @@ function protect(inst: Instance,changelist)
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
-				Destroyed = destroyed})
+				Destroyed = destroyed,
+				ChangeList = changelist})
 		end)
 		inst:GetPropertyChangedSignal("Parent"):Once(function()
 			ondeletion({Event = event,
@@ -46,7 +47,8 @@ function protect(inst: Instance,changelist)
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
-				Destroyed = destroyed})
+				Destroyed = destroyed,
+				ChangeList = changelist})
 		end)
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
@@ -56,7 +58,9 @@ function protect(inst: Instance,changelist)
 						Current = inst,
 						Clone = oldclone,
 						Parent = oldparent,
-						Destroyed = destroyed})
+						Destroyed = destroyed,
+						ChangeList = changelist
+					})
 				end)
 			end)
 		end
@@ -68,7 +72,8 @@ function protect(inst: Instance,changelist)
 						Current = inst,
 						Clone = oldclone,
 						Parent = oldparent,
-						Destroyed = destroyed})
+						Destroyed = destroyed,
+						ChangeList = changelist})
 				end
 			end)
 		end
