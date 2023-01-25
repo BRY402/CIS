@@ -28,9 +28,10 @@ local metaMethods = {
 local function range(min, max, add, func)
 	for i = min, max, add do
 		local yield = i % (10 * add) == 0
-		func(i, yield)
 		if yield then
-			task.wait()
+			func(i, yield, task.wait())
+		else
+			func(i, yield, 0)
 		end
 	end
 end
@@ -40,9 +41,10 @@ local function read(list, func)
 		local n = number[1]
 		number[1] = n + 1
 		local yield = (n + 1) % 10 == 0
-		func(i , v, yield)
 		if yield then
-			task.wait()	
+			func(i, v, yield, task.wait())
+		else
+			func(i, v, yield, 0)
 		end
 	end
 end
@@ -52,9 +54,10 @@ local function forever(func)
 		local n = number[1]
 		number[1] = n + 1
 		local yield = (n + 1) % 10 == 0
-		func(n, yield)
 		if yield then
-			task.wait()
+			func(n, yield, task.wait())
+		else
+			func(n, yield, 0)
 		end
 	end
 end
