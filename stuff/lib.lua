@@ -227,11 +227,8 @@ local lib = {
 		GetNil = function()
 			return nilinstances
 		end,
-		Pack = packtuple,
-		GetCreated = function()
-			return created
-		end
-	},
+		Pack = packtuple
+		},
 	Destroy = function(ins,delay)
 		deb:AddItem(ins,tonumber(delay) or 0)
 	end,
@@ -445,11 +442,28 @@ lib.Utilities.fastSpawn = function(func, ...)
 	storage.fastSpawnRemote.Event:Once(func)
 	storage.fastSpawnRemote:Fire(...)
 end
-lib.Utilities.GetCreatedByName = function(name)
+lib.UItilities.GetCreated = function(getnil)
+	local found = {}
+	if getnil then
+		return created
+	else
+		lib.Loops.read(created, function(i,v)
+			if v.Parent ~= nil then
+				table.insert(found, v)
+			end
+		end)
+		return found
+	end
+end
+lib.Utilities.GetCreatedByName = function(name, getnil)
 	local found = {}
 	lib.Loops.read(created, function(i, v)
-		if v.Name == name and v.Parent ~= nil then
-			table.insert(found, v)
+		if v.Name == name then
+			if getnil then
+				table.insert(found, v)
+			elseif v.Parent ~= nil then
+				table.insert(found, v)
+			end
 		end
 	end)
 	return found
