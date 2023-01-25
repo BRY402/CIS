@@ -448,7 +448,7 @@ end
 lib.Utilities.GetCreatedByName = function(name)
 	local found = {}
 	lib.Loops.read(created, function(i, v)
-		if v.Name == name then
+		if v.Name == name and v.Parent ~= nil then
 			table.insert(found, v)
 		end
 	end)
