@@ -442,7 +442,7 @@ lib.Utilities.fastSpawn = function(func, ...)
 	storage.fastSpawnRemote.Event:Once(func)
 	storage.fastSpawnRemote:Fire(...)
 end
-lib.UItilities.GetCreated = function(getnil)
+lib.Utilities.GetCreated = function(getnil)
 	local found = {}
 	if getnil then
 		return created
