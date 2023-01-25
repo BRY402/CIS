@@ -2,6 +2,7 @@ local deb = game:GetService("Debris")
 local rs = game:GetService("RunService")
 local storage = {}
 local nilinstances = {}
+local created = {}
 local metaMethods = {
 	"__index",
 	"__newindex",
@@ -226,7 +227,10 @@ local lib = {
 		GetNil = function()
 			return nilinstances
 		end,
-		Pack = packtuple
+		Pack = packtuple,
+		GetCreated = function()
+			return created
+		end
 	},
 	Destroy = function(ins,delay)
 		deb:AddItem(ins,tonumber(delay) or 0)
@@ -275,6 +279,7 @@ lib.Create = function(Class, Parent, Properties)
 		end
 		realInst.Parent = Parent
 	end
+	table.insert(created, realInst)
 	return realInst
 end
 lib.Utilities.newMetatable = function(public)
@@ -439,6 +444,15 @@ lib.Utilities.fastSpawn = function(func, ...)
 	end
 	storage.fastSpawnRemote.Event:Once(func)
 	storage.fastSpawnRemote:Fire(...)
+end
+lib.Utilities.GetCreatedByName = function(name)
+	local found = {}
+	lib.Loops.read(created, function(i, v)
+		if v.Name == name then
+			table.insert(found, v)
+		end
+	end)
+	return found
 end
 game.DescendantRemoving:Connect(function(descendant)
 	pcall(isnilparent,descendant)
