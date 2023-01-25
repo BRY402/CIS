@@ -311,6 +311,9 @@ lib.Utilities.newMetatable = function(public)
 						return newPublic[index]
 					end
 				end
+				readonlymeta.__newindex = function(self, index, value)
+					error("Unable to set index '"..index.."' table in read-only")
+				end
 				return readonly, ...
 			else
 				return newPublic, ...
@@ -332,10 +335,13 @@ lib.Utilities.newMetatable = function(public)
 				local readonlymeta = getmetatable(readonly)
 				readonlymeta.__metatable = "This metatable is locked."
 				readonlymeta.__index = function(self, index)
-				if not table.find(metaMethods, index) then
-					return newPublic[index]
+					if not table.find(metaMethods, index) then
+						return newPublic[index]
+					end
 				end
-			end
+				readonlymeta.__newindex = function(self, index, value)
+					error("Unable to set index '"..index.."' table in read-only")
+				end
 				return readonly, ...
 			else
 				return newPublic, ...
