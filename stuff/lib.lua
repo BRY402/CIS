@@ -230,7 +230,9 @@ local lib = {
 		Pack = packtuple
 		},
 	Destroy = function(ins,delay)
-		deb:AddItem(ins,tonumber(delay) or 0)
+		if ins then
+			deb:AddItem(ins,tonumber(delay) or 0)
+		end
 	end,
 	Clone = function(inst)
 		if not storage.clonable then
