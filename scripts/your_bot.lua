@@ -1,5 +1,5 @@
 -- your api key should look like random letters and numbers
-local function Load(API_KEY)
+local function Load(API_KEY, name)
 	assert(API_KEY, "Missing api key (your key should look like random letters and numbers)")
 	local HttpService = game:GetService("HttpService")
 	local Players = game:GetService("Players")
@@ -31,7 +31,7 @@ local function Load(API_KEY)
 	local Humanoid = Character.Humanoid
 	local HumanoidRootPart = Character.HumanoidRootPart
 	animate(Character)
-	Character.Name = "Cob"
+	Character.Name = tostring(name)
 	Character.Parent = script
 	local OwnerChar = owner.Character
 	if OwnerChar then
@@ -79,7 +79,7 @@ local function Load(API_KEY)
 			lib.Destroy(gui,5)
 		end)
 	end
-	ChatMessage("Hello, my name is cob.")
+	ChatMessage("Hello, my name is "..tostring(name)..".")
 	local bot = carter.new(API_KEY)
 	local function Chatted(msg,plr)
 		local PlayerChar = plr.Character
@@ -87,7 +87,7 @@ local function Load(API_KEY)
 			local PlayerHrp = PlayerChar:FindFirstChild("HumanoidRootPart")
 			if PlayerHrp then
 				if (PlayerHrp.Position - HumanoidRootPart.Position).Magnitude <= 50 then
-					if string.lower(msg) == "cob" then
+					if string.lower(msg) == tostring(name) then
 						target = plr
 						ChatMessage(replies[math.random(1,#replies)])
 					else
