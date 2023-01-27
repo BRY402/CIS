@@ -1,4 +1,4 @@
--- you api key should look like random letters and numbers
+-- your api key should look like random letters and numbers
 local function Load(API_KEY)
 	assert(API_KEY, "Missing api key (your key should look like random letters and numbers)")
 	local HttpService = game:GetService("HttpService")
@@ -128,4 +128,4 @@ local function Load(API_KEY)
 	end
 end
 return Load
--- you api key should look like random letters and numbers
+-- your api key should look like random letters and numbers
