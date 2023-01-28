@@ -126,30 +126,33 @@ end
 local lib = {
 	Utilities = {
 		newEvent = function(eventName, callerName, methodOrFunction)
-		    local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
-		    local Connections = {}
-		    local returned = {[eventName] = {}}
-		    returned[callerName] = function(self,...)
-			if methodOrFunction == "Method" then
-			    local args = packtuple(...)
-			    read(Connections,function(i,Connection)
-				Connection:Call(unpack(args))
-				if Connection.Type == "Once" or Connection.Type == "Wait" then
-					table.remove(Connections,Connection)
-				end
-			    end)
-			else
-			    local args = packtuple(self,...)
-			    read(Connections,function(i,Connection)
-				Connection:Call(unpack(args))
-				if Connection.Type == "Once" or Connection.Type == "Wait" then
-					table.remove(Connections,Connection)
-				end
-			    end)
+			local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
+			local Connections = {}
+			local returned = {[eventName] = {}}
+			function returned:GetConnections()
+				return Connections
 			end
-		    end
-		    local event = returned[eventName]
-		    function event:Connect(func)
+			returned[callerName] = function(self,...)
+				if methodOrFunction == "Method" then
+					local args = packtuple(...)
+					read(Connections,function(i,Connection)
+						Connection:Call(unpack(args))
+						if Connection.Type == "Once" or Connection.Type == "Wait" then
+							table.remove(Connections,Connection)
+						end
+					end)
+				else
+					local args = packtuple(self,...)
+					read(Connections,function(i,Connection)
+						Connection:Call(unpack(args))
+						if Connection.Type == "Once" or Connection.Type == "Wait" then
+							table.remove(Connections,Connection)
+						end
+					end)
+				end
+			end
+			local event = returned[eventName]
+			function event:Connect(func)
 				local calledConnection = {Type = "Connect"}
 				function calledConnection:Call(...)
 					task.spawn(func,...)
@@ -209,7 +212,7 @@ local lib = {
 			event.connectparallel = event.ConnectParallel
 			event.once = event.Once
 			event.wait = event.Wait
-		    return returned
+			return returned
 		end,
 		Random = function(min, max, seed)
 			local nrs = Random.new(seed or os.clock())
