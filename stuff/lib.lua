@@ -107,8 +107,10 @@ local function setproperties(Properties, inst)
 				setproperty(inst,i,v)
 			end)
 		else
-			read(Properties,function(i,v)
-				setproperty(inst,i,v)
+			task.spawn(function()
+				read(Properties,function(i,v)
+					setproperty(inst,i,v)
+				end)
 			end)
 		end
 	end
