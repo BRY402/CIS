@@ -107,7 +107,7 @@ local function setproperties(Properties, inst)
 				setproperty(inst,i,v)
 			end)
 		else
-			table.foreach(Properties,function(i,v)
+			read(Properties,function(i,v)
 				setproperty(inst,i,v)
 			end)
 		end
