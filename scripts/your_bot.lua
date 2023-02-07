@@ -121,7 +121,11 @@ local function Load(API_KEY, name)
 				local PlayerHrp = PlayerChar:FindFirstChild("HumanoidRootPart")
 				if PlayerHrp then
 					local unit = (PlayerHrp.Position - HumanoidRootPart.Position).Unit
-					Humanoid:MoveTo(PlayerHrp.Position - unit * 3)
+					local mag = (PlayerHrp.Position - HumanoidRootPart.Position).Magnitude
+					Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
+					if mag <= 4 then
+						Character:PivotTo(CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position))
+					end
 				end
 			end
 		end
