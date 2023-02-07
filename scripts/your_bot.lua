@@ -33,6 +33,7 @@ local function Load(API_KEY, name)
 	animate(Character)
 	Character.Name = tostring(name)
 	Character.Parent = script
+	Character.PrimaryPart = HumanoidRootPart
 	local OwnerChar = owner.Character
 	if OwnerChar then
 		local HumanoidRootPart = OwnerChar:FindFirstChild("HumanoidRootPart")
@@ -124,7 +125,8 @@ local function Load(API_KEY, name)
 					local mag = (PlayerHrp.Position - HumanoidRootPart.Position).Magnitude
 					Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
 					if mag <= 4 then
-						Character:PivotTo(CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position))
+						local x, y, z = CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position).Rotation:ToOrientation()
+						Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * CFrame.Angles(0, y, 0))
 					end
 				end
 			end
