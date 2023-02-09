@@ -126,7 +126,7 @@ local function Load(API_KEY, name)
 					Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
 					if mag <= 4 then
 						local x, y, z = CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position).Rotation:ToOrientation()
-						Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame:Lerp(CFrame.Angles(0, y, 0), .65))
+						Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame.Rotation:Lerp(CFrame.Angles(0, y, 0), .65))
 					end
 				end
 			end
