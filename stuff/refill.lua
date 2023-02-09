@@ -75,7 +75,7 @@ function protect(inst: Instance,changelist)
 		end
 		if inst:IsA("BasePart") then
 			inst:GetPropertyChangedSignal("CFrame"):Once(function()
-				if inst.Position.Y <= -50 then
+				if inst.Position.Y <= -50 and not inst.Anchored then
 					ondeletion({Event = event,
 						CFrame = CFrame.identity,
 						Current = inst,
