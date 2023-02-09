@@ -443,11 +443,14 @@ lib.Utilities.newMetatable = function(public)
 	return publicStorage or public
 end
 lib.Utilities.fastSpawn = function(func, ...)
+	local thread_ = {}
 	if not storage.fastSpawnRemote then
 		storage.fastSpawnRemote = lib.Create("BindableEvent")
+		thread_.thread = coroutine.running()
 	end
 	storage.fastSpawnRemote.Event:Once(func)
 	storage.fastSpawnRemote:Fire(...)
+	return thread_.thread
 end
 lib.Utilities.GetCreated = function(getnil)
 	local found = {}
