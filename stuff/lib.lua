@@ -446,9 +446,11 @@ lib.Utilities.fastSpawn = function(func, ...)
 	local thread_ = {}
 	if not storage.fastSpawnRemote then
 		storage.fastSpawnRemote = lib.Create("BindableEvent")
-		thread_.thread = coroutine.running()
 	end
-	storage.fastSpawnRemote.Event:Once(func)
+	storage.fastSpawnRemote.Event:Once(function()
+		thread_.thread = coroutine.running()
+		func()
+	end)
 	storage.fastSpawnRemote:Fire(...)
 	return thread_.thread
 end
