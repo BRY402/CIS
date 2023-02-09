@@ -449,10 +449,10 @@ lib.Utilities.fastSpawn = function(func, ...)
 	end
 	storage.fastSpawnRemote.Event:Once(function()
 		thread_.thread = coroutine.running()
-		func()
+		thread_.args = lib.Utilities.Pack(func())
 	end)
 	storage.fastSpawnRemote:Fire(...)
-	return thread_.thread
+	return thread_.thread, table.unpack(thread_.args)
 end
 lib.Utilities.GetCreated = function(getnil)
 	local found = {}
