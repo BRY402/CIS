@@ -36,8 +36,9 @@ function protect(inst: Instance,changelist)
 		local oldparent = inst.Parent
 		local destroyed = {false}
 		inst.Destroying:Once(function()
+			local cf = inst:IsA("BasePart") and inst.CFrame
 			ondeletion({Event = event,
-				CFrame = inst.CFrame,
+				CFrame = cf,
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
@@ -45,8 +46,9 @@ function protect(inst: Instance,changelist)
 				ChangeList = changelist})
 		end)
 		inst:GetPropertyChangedSignal("Parent"):Once(function()
+			local cf = inst:IsA("BasePart") and inst.CFrame
 			ondeletion({Event = event,
-				CFrame = inst.CFrame,
+				CFrame = cf,
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
@@ -57,8 +59,9 @@ function protect(inst: Instance,changelist)
 			lib.Loops.read(changelist,function(i,v,yielding)
 				local lastValue = inst[v]
 				inst:GetPropertyChangedSignal(v):Once(function()
+					local cf = inst:IsA("BasePart") and inst.CFrame
 					ondeletion({Event = event,
-						CFrame = inst.CFrame,
+						CFrame = cf,
 						Current = inst,
 						Clone = oldclone,
 						Parent = oldparent,
