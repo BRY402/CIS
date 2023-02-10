@@ -100,8 +100,8 @@ end
 local function createProtect(...)
 	local event = protect(...)
 	return {
-		OnDestroy = event.OnDestroy
-		Disconnect = event.Disconnect
+		OnDestroy = event.OnDestroy,
+		Disconnect = event.Disconnect,
 		disconnect = event.Disconnect
 	}
 end
