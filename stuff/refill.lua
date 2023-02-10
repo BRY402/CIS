@@ -3,8 +3,8 @@ local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-sc
 local blacklist = {"Explosions"}
 local protect
 local function ondeletion(data)
-	if not data.Destroyed[1] then
-		data.Destroyed[1] = true
+	if not data.Storage.destroyed then
+		data.Storage.destroyed = true
 		local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
 		local cloneinst = lib.Clone(data.Clone)
 		lib.Destroy(data.Current)
@@ -34,63 +34,75 @@ function protect(inst: Instance,changelist)
 		local event = lib.Utilities.newEvent("OnDestroy","CallOnDestroy")
 		local oldclone = lib.Clone(inst)
 		local oldparent = inst.Parent
-		local destroyed = {false}
-		inst.Destroying:Once(function()
+		local storage = {
+			destroyed = false,
+			connections = {}
+		}
+		function event:Disconnect()
+			lib.Loops.read(storage.connections, function(i, connection)
+				connection:Disconnect()
+			end)
+		end
+		table.insert(storage.connections, inst.Destroying:Once(function()
 			local cf = inst:IsA("BasePart") and inst.CFrame
 			ondeletion({Event = event,
 				CFrame = cf,
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
-				Destroyed = destroyed,
+				Storage = storage,
 				ChangeList = changelist})
-		end)
-		inst:GetPropertyChangedSignal("Parent"):Once(function()
+		end))
+		table.insert(storage.connections, inst:GetPropertyChangedSignal("Parent"):Once(function()
 			local cf = inst:IsA("BasePart") and inst.CFrame
 			ondeletion({Event = event,
 				CFrame = cf,
 				Current = inst,
 				Clone = oldclone,
 				Parent = oldparent,
-				Destroyed = destroyed,
+				Storage = storage,
 				ChangeList = changelist})
-		end)
+		end))
 		if changelist then
 			lib.Loops.read(changelist,function(i,v,yielding)
 				local lastValue = inst[v]
-				inst:GetPropertyChangedSignal(v):Once(function()
+				table.insert(storage.connections, inst:GetPropertyChangedSignal(v):Once(function()
 					local cf = inst:IsA("BasePart") and inst.CFrame
 					ondeletion({Event = event,
 						CFrame = cf,
 						Current = inst,
 						Clone = oldclone,
 						Parent = oldparent,
-						Destroyed = destroyed,
+						Storage = storage,
 						ChangeList = changelist,
 						ChangedValue = v,
 						OldValue = lastValue
 					})
-				end)
+				end))
 			end)
 		end
 		if inst:IsA("BasePart") then
-			inst:GetPropertyChangedSignal("CFrame"):Once(function()
+			table.insert(storage.connections, inst:GetPropertyChangedSignal("CFrame"):Once(function()
 				if inst.Position.Y <= -50 and not inst.Anchored then
 					ondeletion({Event = event,
 						CFrame = CFrame.identity,
 						Current = inst,
 						Clone = oldclone,
 						Parent = oldparent,
-						Destroyed = destroyed,
+						Storage = storage,
 						ChangeList = changelist})
 				end
-			end)
+			end))
 		end
 		return event
 	end
 end
 local function createProtect(...)
 	local event = protect(...)
-	return {OnDestroy = event.OnDestroy}
+	return {
+		OnDestroy = event.OnDestroy
+		Disconnect = event.Disconnect
+		disconnect = event.Disconnect
+	}
 end
 return createProtect
