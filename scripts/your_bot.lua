@@ -115,23 +115,26 @@ local function Load(API_KEY, name)
 			Chatted(msg,plr)
 		end)
 	end)
-	while task.wait() do
-		if target then
-			local PlayerChar = target.Character
-			if PlayerChar then
-				local PlayerHrp = PlayerChar:FindFirstChild("HumanoidRootPart")
-				if PlayerHrp then
-					local unit = (PlayerHrp.Position - HumanoidRootPart.Position).Unit
-					local mag = (PlayerHrp.Position - HumanoidRootPart.Position).Magnitude
-					Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
-					if mag <= 5 then
-						local x, y, z = CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position).Rotation:ToOrientation()
-						Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame.Rotation:Lerp(CFrame.Angles(0, y, 0), .65))
+	lib.Utilities.fastSpawn(function()
+		while task.wait() do
+			if target then
+				local PlayerChar = target.Character
+				if PlayerChar then
+					local PlayerHrp = PlayerChar:FindFirstChild("HumanoidRootPart")
+					if PlayerHrp then
+						local unit = (PlayerHrp.Position - HumanoidRootPart.Position).Unit
+						local mag = (PlayerHrp.Position - HumanoidRootPart.Position).Magnitude
+						Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
+						if mag >= 1.5 and mag <= 5 then
+							local x, y, z = CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position).Rotation:ToOrientation()
+							Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame.Rotation:Lerp(CFrame.Angles(0, y, 0), .65))
+						end
 					end
 				end
 			end
 		end
-	end
+	end)
+	return Character
 end
 return Load
 -- your api key should look like random letters and numbers
