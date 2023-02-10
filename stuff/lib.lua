@@ -447,12 +447,12 @@ lib.Utilities.fastSpawn = function(func, ...)
 	if not storage.fastSpawnRemote then
 		storage.fastSpawnRemote = lib.Create("BindableEvent")
 	end
-	storage.fastSpawnRemote.Event:Once(function()
+	storage.fastSpawnRemote.Event:Once(function(...)
 		thread_.thread = coroutine.running()
-		thread_.args = lib.Utilities.Pack(func())
+		thread_.args = lib.Utilities.Pack(func(...))
 	end)
 	storage.fastSpawnRemote:Fire(...)
-	return thread_.thread, table.unpack(thread_.args)
+	return thread_.thread, table.unpack(thread_.args or table.create(0))
 end
 lib.Utilities.GetCreated = function(getnil)
 	local found = {}
