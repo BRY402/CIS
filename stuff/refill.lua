@@ -99,10 +99,12 @@ function protect(inst: Instance,changelist)
 end
 local function createProtect(...)
 	local event = protect(...)
-	return {
-		OnDestroy = event.OnDestroy,
-		Disconnect = event.Disconnect,
-		disconnect = event.Disconnect
-	}
+	if event then
+		return {
+			OnDestroy = event.OnDestroy,
+			Disconnect = event.Disconnect,
+			disconnect = event.Disconnect
+		}
+	end
 end
 return createProtect
