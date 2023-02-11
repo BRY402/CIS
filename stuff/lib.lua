@@ -449,7 +449,11 @@ lib.Utilities.fastSpawn = function(func, ...)
 	end
 	storage.fastSpawnRemote.Event:Once(function(...)
 		thread_.thread = coroutine.running()
-		thread_.args = lib.Utilities.Pack(func(...))
+		if typeof(func) == "function" then
+			thread_.args = lib.Utilities.Pack(func(...))
+		elseif typeof(func) == "thread" then
+			thread._args = lib.Utilities.Pack(coroutine.resume(func, ...))
+		end
 	end)
 	storage.fastSpawnRemote:Fire(...)
 	return thread_.thread, table.unpack(thread_.args or table.create(0))
