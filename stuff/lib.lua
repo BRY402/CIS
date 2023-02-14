@@ -217,7 +217,7 @@ local lib = {
 			return returned
 		end,
 		Random = function(min, max, seed)
-			local nrs = Random.new(seed or os.clock())
+			local nrs = Random.new(seed)
 			if min and max then
 				int = nrs:NextInteger(min,max)
 				num = nrs:NextNumber(min,max)
