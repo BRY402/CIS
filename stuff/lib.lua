@@ -198,15 +198,20 @@ local lib = {
 				Connection.disconnect = Connection.Disconnect
 				return Connection
 			end
-			function event:Wait()
-				local calledConnection = {Type = "Wait"}
+			function event:Wait(waittime)
+				local waittime = tonumber(waittime) or math.huge
+				local calledConnection = {Type = "Wait", CurrentWaitTime = 0}
 				function calledConnection:Call(...)
 					self.Arguments = packtuple(...)
 				end
-				table.insert(Connections,calledConnection)
+				table.insert(Connections, calledConnection)
 				repeat
-					task.wait()
-				until calledConnection.Arguments
+					calledConnection.CurrentWaitTime = calledConnection.CurrentWaitTime + task.wait()
+				until calledConnection.Arguments or calledConnection.CurrentWaitTime >= waittime
+				if calledConnection.CurrentWaitTime >= waittime then
+					table.remove(Connections, table.find(Connections, calledConnection))
+					error("Hit deadline for connection.")
+				end
 				return table.unpack(calledConnection.Arguments)
 			end
 			event.connect = event.Connect
