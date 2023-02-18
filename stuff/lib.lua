@@ -207,13 +207,14 @@ local lib = {
 				table.insert(Connections, calledConnection)
 				repeat
 					calledConnection.CurrentWaitTime = calledConnection.CurrentWaitTime + task.wait()
-				until calledConnection.Arguments or calledConnection.CurrentWaitTime >= waittime
-				if calledConnection.CurrentWaitTime >= waittime then
-					table.remove(Connections, table.find(Connections, calledConnection))
-					if not silent then
-						error("Hit deadline for connection.")
+					if calledConnection.CurrentWaitTime >= waittime then
+						table.remove(Connections, table.find(Connections, calledConnection))
+						if not silent then
+							error("Hit deadline for connection.")
+						end
+						break
 					end
-				end
+				until calledConnection.Arguments
 				return table.unpack(calledConnection.Arguments or table.create(0))
 			end
 			event.connect = event.Connect
