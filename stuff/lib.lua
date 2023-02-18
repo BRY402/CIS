@@ -198,7 +198,7 @@ local lib = {
 				Connection.disconnect = Connection.Disconnect
 				return Connection
 			end
-			function event:Wait(waittime)
+			function event:Wait(waittime, silent)
 				local waittime = tonumber(waittime) or math.huge
 				local calledConnection = {Type = "Wait", CurrentWaitTime = 0}
 				function calledConnection:Call(...)
@@ -210,9 +210,11 @@ local lib = {
 				until calledConnection.Arguments or calledConnection.CurrentWaitTime >= waittime
 				if calledConnection.CurrentWaitTime >= waittime then
 					table.remove(Connections, table.find(Connections, calledConnection))
-					error("Hit deadline for connection.")
+					if not silent then
+						error("Hit deadline for connection.")
+					end
 				end
-				return table.unpack(calledConnection.Arguments)
+				return table.unpack(calledConnection.Arguments or table.create(0))
 			end
 			event.connect = event.Connect
 			event.connectparallel = event.ConnectParallel
