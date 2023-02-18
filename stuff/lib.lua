@@ -139,7 +139,7 @@ local lib = {
 					read(Connections,function(i,Connection)
 						Connection:Call(unpack(args))
 						if Connection.Type == "Once" or Connection.Type == "Wait" then
-							table.remove(Connections,Connection)
+							table.remove(Connections, table.find(Connections, Connection))
 						end
 					end)
 				else
@@ -147,7 +147,7 @@ local lib = {
 					read(Connections,function(i,Connection)
 						Connection:Call(unpack(args))
 						if Connection.Type == "Once" or Connection.Type == "Wait" then
-							table.remove(Connections,Connection)
+							table.remove(Connections, table.find(Connections, Connection))
 						end
 					end)
 				end
@@ -162,7 +162,7 @@ local lib = {
 				local Connection = {}
 				function Connection:Disconnect()
 					assert(table.find(Connections,func),"Connection was already disconnected")
-					table.remove(Connections,func)
+					table.remove(Connections, table.find(Connections, func))
 				end
 				Connection.disconnect = Connection.Disconnect
 				return Connection
@@ -178,7 +178,7 @@ local lib = {
 				local Connection = {}
 				function Connection:Disconnect()
 					assert(table.find(Connections,func),"Connection was already disconnected")
-					table.remove(Connections,func)
+					table.remove(Connections, table.find(Connections, func))
 				end
 				Connection.disconnect = Connection.Disconnect
 				return Connection
@@ -191,9 +191,9 @@ local lib = {
 				table.insert(Connections,calledConnection)
 				local Connection = {Connected = true}
 				function Connection:Disconnect()
-				    assert(table.find(Connections,func),"Connection was already disconnected")
-						Connection.Connected = false
-				    table.remove(Connections,func)
+					assert(table.find(Connections,func),"Connection was already disconnected")
+					Connection.Connected = false
+					table.remove(Connections, table.find(Connections, func))
 				end
 				Connection.disconnect = Connection.Disconnect
 				return Connection
