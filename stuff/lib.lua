@@ -92,7 +92,7 @@ local function setproperties(Properties, inst)
 			assert(typeof(selfFunc) == "function","__self index is expected to be a function")
 			task.spawn(function()
 				local env = setmetatable({self = Properties,
-					Parent = Parent},{__index = function(self,i)
+					Parent = Properties.Parent or inst.Parent},{__index = function(self,i)
 						return rawget(self,i) or getfenv()[i]
 					end,
 					__newindex = function(self,i,v)
