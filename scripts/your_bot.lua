@@ -20,7 +20,10 @@ local function Load(API_KEY, name)
 		"Hello.",
 		"Hi.",
 		"Called me?",
-		"Coming."}
+		"Coming.",
+		"Hello, there.",
+		"Here."
+	}
 	local goodbies = {"Bye.",
 		"See you later!",
 		"Goodbye.",
@@ -97,7 +100,7 @@ local function Load(API_KEY, name)
 								target = nil
 								ChatMessage(goodbies[math.random(1,#goodbies)])
 							else
-								ChatMessage(bot:Send(msg,plr))
+								ChatMessage(bot:Send(plr.Name": "msg, plr))
 							end
 						end
 					end
@@ -127,7 +130,7 @@ local function Load(API_KEY, name)
 						Humanoid:MoveTo(PlayerHrp.Position - unit * 4)
 						if mag >= 2 and mag <= 5 then
 							local x, y, z = CFrame.lookAt(HumanoidRootPart.Position, PlayerHrp.Position).Rotation:ToOrientation()
-							Character:PivotTo(CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame.Rotation:Lerp(CFrame.Angles(0, y, 0), .65))
+							HumanoidRootPart.CFrame = CFrame.new(HumanoidRootPart.Position) * HumanoidRootPart.CFrame.Rotation:Lerp(CFrame.Angles(0, y, 0), .65)
 						end
 					end
 				end
