@@ -100,7 +100,7 @@ local function Load(API_KEY, name)
 								target = nil
 								ChatMessage(goodbies[math.random(1,#goodbies)])
 							else
-								ChatMessage(bot:Send(plr.Name": "msg, plr))
+								ChatMessage(bot:Send(plr.Name..": "..msg, plr))
 							end
 						end
 					end
