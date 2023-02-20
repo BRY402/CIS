@@ -62,24 +62,9 @@ local function forever(func)
 		end
 	end
 end
-local function isnilparent(target)
-		if target.Parent == nil then
-			table.insert(nilinstances,target)
-		else
-			table.remove(nilinstances,table.find(nilinstances,target))
-		end
-	target:GetPropertyChangedSignal("Parent"):Connect(function()
-		if target.Parent == nil then
-			table.insert(nilinstances,target)
-		else
-			table.remove(nilinstances,table.find(nilinstances,target))
-		end
-	end)
-end
 local function setproperty(target, index, value)
 	if tonumber(index) then
 		value.Parent = target
-		isnilparent(value)
 	else
 		target[index] = value
 	end
@@ -235,9 +220,6 @@ local lib = {
 			local unit = nrs:NextUnitVector()
 			local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
 			return rt
-		end,
-		GetNil = function()
-			return nilinstances
 		end,
 		Pack = packtuple
 		},
@@ -491,7 +473,4 @@ lib.Utilities.GetCreatedByName = function(name, getnil)
 	end)
 	return found
 end
-game.DescendantRemoving:Connect(function(descendant)
-	pcall(isnilparent,descendant)
-end)
 return lib
