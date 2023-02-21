@@ -1,5 +1,4 @@
-local deb = game:GetService("Debris")
-local rs = game:GetService("RunService")
+local Debris = game:GetService("Debris")
 local storage = {}
 local nilinstances = {}
 local created = {}
@@ -153,7 +152,6 @@ local lib = {
 				return Connection
 			end
 			function event:ConnectParallel(func)
-				assert(script:GetActor(),"Script must have an actor")
 				local calledConnection = {Type = "ConnectParellel"}
 				function calledConnection:Call(...)
 					task.desynchronize()
@@ -209,23 +207,23 @@ local lib = {
 			return returned
 		end,
 		Random = function(min, max, seed)
-			local nrs = Random.new(seed)
+			local newRandomSeed = Random.new(seed)
 			if min and max then
-				int = nrs:NextInteger(min,max)
-				num = nrs:NextNumber(min,max)
+				int = newRandomSeed:NextInteger(min,max)
+				num = newRandomSeed:NextNumber(min,max)
 			else
 				int = 0
-				num = nrs:NextNumber()
+				num = newRandomSeed:NextNumber()
 			end
-			local unit = nrs:NextUnitVector()
-			local rt = {Unit = unit,Integer = int,Number = num,Generator = nrs}
+			local unit = newRandomSeed:NextUnitVector()
+			local rt = {Unit = unit,Integer = int,Number = num,Generator = newRandomSeed}
 			return rt
 		end,
 		Pack = packtuple
 		},
 	Destroy = function(ins,delay)
 		if ins then
-			deb:AddItem(ins,tonumber(delay) or 0)
+			Debris:AddItem(ins,tonumber(delay) or 0)
 		end
 	end,
 	Clone = function(inst)
