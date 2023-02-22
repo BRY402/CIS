@@ -286,7 +286,9 @@ lib.Create = function(Class, Parent, Properties)
 				return realInst
 			end
 		end
-		realInst.Parent = Parent
+		if Parent then
+			realInst.Parent = Parent
+		end
 	end
 	table.insert(created, realInst)
 	return realInst
