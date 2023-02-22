@@ -29,9 +29,15 @@ local function range(min, max, add, func)
 	for i = min, max, add do
 		local yield = i % (10 * add) == 0
 		if yield then
-			func(i, yield, task.wait())
+			local can_break = func(i, yield, task.wait())
+			if can_break then
+				break
+			end
 		else
-			func(i, yield, 0)
+			local can_break = func(i, yield, 0)
+			if can_break then
+				break
+			end
 		end
 	end
 end
@@ -42,9 +48,15 @@ local function read(list, func)
 		number[1] = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			func(i, v, yield, task.wait())
+			local can_break = func(i, v, yield, task.wait())
+			if can_break then
+				break
+			end
 		else
-			func(i, v, yield, 0)
+			local can_break = func(i, v, yield, 0)
+			if can_break then
+				break
+			end
 		end
 	end
 end
@@ -55,9 +67,15 @@ local function forever(func)
 		number[1] = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			func(n, yield, task.wait())
+			local can_break = func(n, yield, task.wait())
+			if can_break then
+				break
+			end
 		else
-			func(n, yield, 0)
+			local can_break = func(n, yield, 0)
+			if can_break then
+				break
+			end
 		end
 	end
 end
