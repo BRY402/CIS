@@ -135,7 +135,7 @@ local lib = {
 			function returned:GetConnections()
 				return Connections
 			end
-			returned[callerName] = function(self,...)
+			returned[callerName or "Fire"] = function(self, ...)
 				if methodOrFunction == "Method" then
 					local args = packtuple(...)
 					read(Connections,function(i,Connection)
