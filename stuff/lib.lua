@@ -249,7 +249,8 @@ local lib = {
 			storage.clonable = Instance.new("Script")
 		end
 		if inst then
-			local archivable = inst.Archivable
+			task.synchronize()
+			archivable = inst.Archivable
 			inst.Archivable = true
 			local newInst = storage.clonable.Clone(inst)
 			inst.Archivable = archivable
