@@ -247,7 +247,6 @@ local lib = {
 	Clone = function(inst)
 		if not storage.clonable then
 			storage.clonable = Instance.new("Script")
-			storage.clonable.Disabled = true
 		end
 		if inst then
 			local archivable = inst.Archivable
