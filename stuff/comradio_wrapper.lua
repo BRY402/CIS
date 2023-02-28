@@ -32,9 +32,9 @@ function comradio:NewUser(id, nickname)
 		Channel = "general",
 		Events = {
 			Chatted = chattedEvent.Chatted,
-			RosterRequested = rosterEvent.RosterRequest,
+			RosterRequested = rosterEvent.RosterRequested,
 			ChangedChannel = channelEvent.ChangedChannel,
-			ChangeStatus = statusEvent.ChangeStatus,
+			ChangedStatus = statusEvent.ChangedStatus,
 			UserAdded = userEvent.UserAdded
 		}
 	}
