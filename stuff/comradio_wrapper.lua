@@ -16,6 +16,16 @@ local function getPlayer(id)
 		return user
 	end
 end
+local function getPlayerId(name)
+	local success, id = pcall(function()
+		return Players:GetUserIdFromNameAsync(tostring(name))
+	end)
+	if not success then
+		return 1
+	else
+		return id
+	end
+end
 function comradio:NewUser(id, nickname)
 	local id = validateId(id)
 	local name = getPlayer(id)
@@ -68,6 +78,9 @@ function comradio:NewUser(id, nickname)
 	end
 	function connection.Radio:GetNameFromId(id)
 		return getPlayer(id)
+	end
+	function connection.Radio:GetIdFromName(name)
+		return getPlayerId(name)
 	end
 	function connection:SetChannel(channel)
 		self.Channel = tostring(channel)
