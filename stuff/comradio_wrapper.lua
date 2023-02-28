@@ -62,6 +62,9 @@ function comradio:NewUser(id, nickname)
 			end
 		end)
 	end
+	function connection:GetRosterResponses()
+		return table.clone(storage.Responses)
+	end
 	function connection:SetChannel(channel)
 		self.Channel = tostring(channel)
 		channelEvent:Fire(tostring(channel))
