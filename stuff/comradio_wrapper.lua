@@ -2,13 +2,19 @@ local MessagingService = game:GetService("MessagingService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true), "lib")()
-local storage = {warned = false}
 local comradio = {}
 local function validateId(id)
 	return math.clamp(tonumber(id) or 1, 1, math.huge)
 end
 local function getPlayer(id)
-	return Players:GetNameFromUserIdAsync(validateId(id))
+	local success, user = pcall(function()
+		return Players:GetNameFromUserIdAsync(validateId(id))
+	end)
+	if not success then
+		return "Unknown"
+	else
+		return user
+	end
 end
 function comradio:NewUser(id, nickname)
 	local id = validateId(id)
