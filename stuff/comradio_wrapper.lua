@@ -46,7 +46,7 @@ function comradio:NewUser(id, nickname)
 			elseif data.Type == "sound" or data.Type == "image" then
 				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), tostring(data.Content), tostring(data.Nickname))
 			elseif data.Type == "ping" then
-				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), getPlayer(tonumber(data.Content) or 1))
+				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), getPlayer(tonumber(data.Content) or 1), tostring(data.Nickname))
 			elseif data.Type == "status" then
 				statusEvent:Fire(getPlayer(data.Author), tostring(data.Comment))
 			elseif data.Type == "rosterRequest" then
@@ -103,7 +103,7 @@ function comradio:NewUser(id, nickname)
 			Author = id,
 			Nickname = nickname
 		}))
-		chattedEvent:Fire("ping", getPlayer(id), tostring(msg), getPlayer(tonumber(user) or 1))
+		chattedEvent:Fire("ping", getPlayer(id), tostring(msg), getPlayer(tonumber(user) or 1), tostring(nickname))
 	end
 	function connection:ChangeStatus(new_status)
 		MessagingService:PublishAsync("comradio:"..self.Channel, HttpService:JSONEncode({
