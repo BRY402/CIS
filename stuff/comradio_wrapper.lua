@@ -36,7 +36,8 @@ function comradio:NewUser(id, nickname)
 			ChangedChannel = channelEvent.ChangedChannel,
 			ChangedStatus = statusEvent.ChangedStatus,
 			UserAdded = userEvent.UserAdded
-		}
+		},
+		Radio = {}
 	}
 	local function newConnection()
 		return MessagingService:SubscribeAsync("comradio:"..connection.Channel, function(data)
@@ -62,8 +63,11 @@ function comradio:NewUser(id, nickname)
 			end
 		end)
 	end
-	function connection:GetRosterResponses()
+	function connection.Radio:GetRosterResponses()
 		return table.clone(storage.Responses)
+	end
+	function connection.Radio:GetNameFromId(id)
+		return getPlayer(id)
 	end
 	function connection:SetChannel(channel)
 		self.Channel = tostring(channel)
