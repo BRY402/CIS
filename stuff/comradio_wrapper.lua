@@ -44,6 +44,7 @@ function comradio:NewUser(id, nickname)
 			elseif data.Type == "status" then
 				statusEvent:Fire(getPlayer(data.Author), tostring(data.Comment))
 			elseif data.Type == "rosterRequest" then
+				connection:RespondToRoster()
 				rosterEvent:Fire(getPlayer(data.Author), "Request")
 			elseif data.Type == "rosterResponse" then
 				if storage.RequestingRoster and data.Author ~= id then
