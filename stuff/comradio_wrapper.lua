@@ -34,9 +34,15 @@ function comradio:NewUser(id, nickname)
 	local channelEvent = lib.Utilities.newEvent("ChangedChannel")
 	local statusEvent = lib.Utilities.newEvent("ChangedStatus")
 	local userEvent = lib.Utilities.newEvent("UserAdded")
+	local errorEvent = lib.Utilities.newEvent("OnFailure")
 	local storage = {
 		RequestingRoster = false,
-		Responses = {}
+		Responses = {},
+		Decoded = {
+			Status = "Empty",
+			Details = "Not initialized",
+			Data = nil
+		}
 	}
 	local connection = {
 		Channel = "general",
@@ -47,29 +53,41 @@ function comradio:NewUser(id, nickname)
 			ChangedStatus = statusEvent.ChangedStatus,
 			UserAdded = userEvent.UserAdded
 		},
-		Radio = {}
+		Radio = {OnFailure = errorEvent.OnFailure}
 	}
-	local function newConnection()
+	local function newConnection(error_)
 		return MessagingService:SubscribeAsync("comradio:"..connection.Channel, function(data)
-			local data = HttpService:JSONDecode(data) or table.create(0)
-			if data.Type == "text" then
-				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Content), tostring(data.Nickname))
-			elseif data.Type == "sound" or data.Type == "image" then
-				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), tostring(data.Content), tostring(data.Nickname))
-			elseif data.Type == "ping" then
-				chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), getPlayer(data.Content), tostring(data.Nickname))
-			elseif data.Type == "status" then
-				statusEvent:Fire(getPlayer(data.Author), tostring(data.Comment))
-			elseif data.Type == "rosterRequest" then
-				connection:RespondToRoster()
-				rosterEvent:Fire(getPlayer(data.Author), "Request")
-			elseif data.Type == "rosterResponse" then
-				if storage.RequestingRoster and data.Author ~= id then
-					table.insert(storage.Responses, getPlayer(data.Author))
-					rosterEvent:Fire(getPlayer(data.Author), "Response")
+			local success, data = pcall(function()
+				return HttpService:JSONDecode(data) or table.create(0)
+			end)
+			storage.Decoded = {
+				Status = success and "Success" or "Dead",
+				Details = not success and data or "",
+				Data = success and data or nil
+			}
+			if success then
+				if data.Type == "text" then
+					chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Content), tostring(data.Nickname))
+				elseif data.Type == "sound" or data.Type == "image" then
+					chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), tostring(data.Content), tostring(data.Nickname))
+				elseif data.Type == "ping" then
+					chattedEvent:Fire(data.Type, getPlayer(data.Author), tostring(data.Comment), getPlayer(data.Content), tostring(data.Nickname))
+				elseif data.Type == "status" then
+					statusEvent:Fire(getPlayer(data.Author), tostring(data.Comment))
+				elseif data.Type == "rosterRequest" then
+					connection:RespondToRoster()
+					rosterEvent:Fire(getPlayer(data.Author), "Request")
+				elseif data.Type == "rosterResponse" then
+					if storage.RequestingRoster and data.Author ~= id then
+						table.insert(storage.Responses, getPlayer(data.Author))
+						rosterEvent:Fire(getPlayer(data.Author), "Response")
+					end
+				elseif data.Type == "welcome" then
+					userEvent:Fire(getPlayer(data.Author))
 				end
-			elseif data.Type == "welcome" then
-				userEvent:Fire(getPlayer(data.Author))
+			else
+				local jsonStatus = connection.Radio:GetJSONStatus()
+				errorEvent:Fire(jsonStatus.Status, jsonStatus.Details, jsonStatus.Data)
 			end
 		end)
 	end
@@ -87,6 +105,9 @@ function comradio:NewUser(id, nickname)
 	end
 	function connection.Radio:GetName()
 		return name
+	end
+	function connection.Radio:GetJSONStatus()
+		return table.clone(storage.Decoded)
 	end
 	function connection:SetChannel(channel)
 		self.Channel = tostring(channel)
