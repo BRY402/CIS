@@ -1,36 +1,30 @@
 local HttpService = game:GetService("HttpService")
 local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
-local blacklist = {"Explosions"}
 local protect
 local function ondeletion(data)
 	if not data.Storage.destroyed then
-		data.Storage.destroyed = true
-		local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
-		local cloneinst = lib.Clone(data.Clone)
-		lib.Destroy(data.Current)
-		if cloneinst then
-			if cloneinst:IsA("BasePart") then
-				cloneinst.CFrame = newcf
-			end
-			if data.ChangedValue then
-				cloneinst[data.ChangedValue] = data.OldValue
-			end
-			data.Event:CallOnDestroy(cloneinst,data.Current)
-			task.wait()
-			pcall(function()
+		task.defer(function()
+			data.Storage.destroyed = true
+			local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
+			local cloneinst = lib.Clone(data.Clone)
+			lib.Destroy(data.Current)
+			if cloneinst then
+				if data.ChangedValue then
+					cloneinst[data.ChangedValue] = data.OldValue
+				end
+				data.Event:CallOnDestroy(cloneinst, data.Current)
+				if cloneinst:IsA("BasePart") then
+					cloneinst.CFrame = newcf
+				end
 				cloneinst.Parent = data.Parent
-			end)
-			local newEvent = protect(cloneinst, data.ChangeList)
-			newEvent.CallOnDestroy = data.Event.CallOnDestroy
-		end
+				local newEvent = protect(cloneinst, data.ChangeList)
+				newEvent.CallOnDestroy = data.Event.CallOnDestroy
+			end
+		end)
 	end
 end
 function protect(inst: Instance,changelist)
 	if inst then
-		if table.find(blacklist,inst.ClassName) then
-			warn("Blacklisted instance type")
-			return
-		end
 		local event = lib.Utilities.newEvent("OnDestroy","CallOnDestroy")
 		local oldclone = lib.Clone(inst)
 		local oldparent = inst.Parent
