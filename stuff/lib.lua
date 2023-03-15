@@ -315,8 +315,8 @@ lib.Utilities.newMetatable = function(public)
 			local newHidden = table.clone(hidden)
 			newHidden.__metatable = newPublic
 			setmetatable(newPublic, newHidden)
-			if public.__readonly then
-				local readonly_type = typeof(public.__readonly)
+			if rawget(public, "__readonly") then
+				local readonly_type = typeof(rawget(public, "__readonly"))
 				assert(readonly_type == "boolean", "Expected 'boolean' not '"..readonly_type.."') for metamethod __readonly")
 				local readonly = newproxy(true)
 				local readonlymeta = getmetatable(readonly)
@@ -371,18 +371,18 @@ lib.Utilities.newMetatable = function(public)
 			end
 			return Copy(publicStorage.__return and typeof(publicStorage.__return) == "table" and table.unpack(publicStorage.__return) or publicStorage.__return)
 		else
-			if public.__call then
-				local Arguments = lib.Utilities.Pack(public.__call(self, ...))
-				return Copy(table.unpack(Arguments), public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
+			if rawget(public, "__call") then
+				local Arguments = lib.Utilities.Pack(rawget(public, "__call")(self, ...))
+				return Copy(table.unpack(Arguments), rawget(public, "__return") and typeof(rawget(public, "__return")) == "table" and table.unpack(rawget(public, "__return")) or rawget(public, "__return"))
 			end
-			return Copy(public.__return and typeof(public.__return) == "table" and table.unpack(public.__return) or public.__return)
+			return Copy(rawget(public, "__return") and typeof(rawget(public, "__return")) == "table" and table.unpack(rawget(public, "__return")) or rawget(public, "__return"))
 		end
 	end
 	if publicStorage then
 		hidden.__index = function(self, index)
 			local value = publicStorage[index]
-			if publicStorage.__index then
-				return publicStorage[index]
+			if publicStorage.__index and string.sub(index, 1, 2) ~= "__" then
+				return publicStorage:__index(index)
 			end
 			if value and typeof(value) == "table" then
 				if value.__TableValue then
@@ -411,7 +411,7 @@ lib.Utilities.newMetatable = function(public)
 		hidden.__index = function(self, index)
 			local value = rawget(public, index)
 			local __index = rawget(public, "__index")
-			if __index then
+			if __index and string.sub(index, 1, 2) ~= "__" then
 				return __index(self, index)
 			end
 			if value and typeof(value) == "table" then
