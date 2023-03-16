@@ -28,7 +28,7 @@ local metaMethods = {
 local function packtuple(...)
 	local packed = table.pack(...)
 	packed.n = nil
-	return packed or table.create(0)
+	return packed
 end
 local function range(min, max, add, func)
 	local storage = {}
@@ -40,7 +40,7 @@ local function range(min, max, add, func)
 				break
 			end
 		else
-			local args = packtuple(func(i, yield, 0))
+			storage.args = packtuple(func(i, yield, 0))
 			if storage.args[1] then
 				break
 			end
@@ -55,12 +55,12 @@ local function read(list, func)
 		storage.n = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			local args = packtuple(func(i, v, yield, task.wait()))
+			storage.args = packtuple(func(i, v, yield, task.wait()))
 			if storage.args[1] then
 				break
 			end
 		else
-			local args = packtuple(func(i, v, yield, 0))
+			storage.args = packtuple(func(i, v, yield, 0))
 			if storage.args[1] then
 				break
 			end
@@ -75,12 +75,12 @@ local function forever(func)
 		storage.n = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			local args = packtuple(func(n, yield, task.wait()))
+			storage.args = packtuple(func(n, yield, task.wait()))
 			if storage.args[1] then
 				break
 			end
 		else
-			local args = packtuple(func(n, yield, 0))
+			storage.args = packtuple(func(n, yield, 0))
 			if storage.args[1] then
 				break
 			end
@@ -220,7 +220,7 @@ local lib = {
 						break
 					end
 				until calledConnection.Arguments
-				return table.unpack(calledConnection.Arguments)
+				return table.unpack(calledConnection.Arguments or table.create(0))
 			end
 			event.connect = event.Connect
 			event.connectparallel = event.ConnectParallel
@@ -466,7 +466,7 @@ lib.Utilities.fastSpawn = function(func, ...)
 		end
 	end)
 	storage.fastSpawnRemote:Fire(...)
-	return thread_.thread, table.unpack(thread_.args)
+	return thread_.thread, table.unpack(thread_.args or table.create(0))
 end
 lib.Utilities.GetCreated = function(getnil)
 	local found = {}
