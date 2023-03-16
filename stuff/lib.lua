@@ -25,59 +25,68 @@ local metaMethods = {
 	"__return",
 	"__readonly"
 }
+local function packtuple(...)
+	local packed = table.pack(...)
+	packed.n = nil
+	return packed
+end
 local function range(min, max, add, func)
+	local storage = {}
 	for i = min, max, add do
 		local yield = i % (10 * add) == 0
 		if yield then
-			local can_break = func(i, yield, task.wait())
-			if can_break then
+			storage.args = packtuple(func(i, yield, task.wait()))
+			if storage.args[1] then
 				break
 			end
 		else
-			local can_break = func(i, yield, 0)
-			if can_break then
+			local args = packtuple(func(i, yield, 0))
+			if storage.args[1] then
 				break
 			end
 		end
 	end
+	return storage.args
 end
 local function read(list, func)
-	local number = {0}
+	local storage = {n = 0}
 	for i,v in pairs(list) do
-		local n = number[1]
-		number[1] = n + 1
+		local n = storage.n
+		storage.n = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			local can_break = func(i, v, yield, task.wait())
-			if can_break then
+			local args = packtuple(func(i, v, yield, task.wait()))
+			if storage.args[1] then
 				break
 			end
 		else
-			local can_break = func(i, v, yield, 0)
-			if can_break then
+			local args = packtuple(func(i, v, yield, 0))
+			if storage.args[1] then
 				break
 			end
 		end
 	end
+	return storage.args
 end
 local function forever(func)
-	local number = {0}
+	local storage = {n = 0}
 	while true do
-		local n = number[1]
-		number[1] = n + 1
+		local n = storage.n
+		storage.n = n + 1
 		local yield = (n + 1) % 10 == 0
 		if yield then
-			local can_break = func(n, yield, task.wait())
-			if can_break then
+			local args = packtuple(func(n, yield, task.wait()))
+			if storage.args[1] then
 				break
 			end
 		else
-			local can_break = func(n, yield, 0)
-			if can_break then
+			local args = packtuple(func(n, yield, 0))
+			if storage.args[1] then
 				break
 			end
 		end
 	end
+	return storage.args
 end
 local function setproperty(target, index, value)
 	if tonumber(index) then
@@ -115,11 +124,6 @@ local function setproperties(Properties, inst)
 			end)
 		end
 	end
-end
-local function packtuple(...)
-	local packed = table.pack(...)
-	packed.n = nil
-	return packed
 end
 local function checkMetamethod(toWritte, index, value)
 	if table.find(metaMethods, index) then
