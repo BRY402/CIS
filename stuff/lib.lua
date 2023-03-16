@@ -28,7 +28,7 @@ local metaMethods = {
 local function packtuple(...)
 	local packed = table.pack(...)
 	packed.n = nil
-	return packed
+	return packed or table.create(0)
 end
 local function range(min, max, add, func)
 	local storage = {}
@@ -220,7 +220,7 @@ local lib = {
 						break
 					end
 				until calledConnection.Arguments
-				return table.unpack(calledConnection.Arguments or table.create(0))
+				return table.unpack(calledConnection.Arguments)
 			end
 			event.connect = event.Connect
 			event.connectparallel = event.ConnectParallel
@@ -466,7 +466,7 @@ lib.Utilities.fastSpawn = function(func, ...)
 		end
 	end)
 	storage.fastSpawnRemote:Fire(...)
-	return thread_.thread, table.unpack(thread_.args or table.create(0))
+	return thread_.thread, table.unpack(thread_.args)
 end
 lib.Utilities.GetCreated = function(getnil)
 	local found = {}
