@@ -46,7 +46,7 @@ local function range(min, max, add, func)
 			end
 		end
 	end
-	return storage.args
+	return table.unpack(storage.args)
 end
 local function read(list, func)
 	local storage = {n = 0}
@@ -66,7 +66,7 @@ local function read(list, func)
 			end
 		end
 	end
-	return storage.args
+	return table.unpack(storage.args)
 end
 local function forever(func)
 	local storage = {n = 0}
@@ -86,7 +86,7 @@ local function forever(func)
 			end
 		end
 	end
-	return storage.args
+	return table.unpack(storage.args)
 end
 local function setproperty(target, index, value)
 	if tonumber(index) then
