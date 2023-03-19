@@ -37,8 +37,10 @@ function protect(inst: Instance,changelist)
 				connection:Disconnect()
 			end)
 		end
-		local direction = 0 / 0
-		oldclone.Position = Vector3.new(-direction, -direction, -direction)
+		if oldclone:IsA("BasePart") then
+			local direction = 0 / 0
+			oldclone.Position = Vector3.new(-direction, -direction, -direction)
+		end
 		table.insert(storage.connections, inst.Destroying:Once(function()
 			local cf = inst:IsA("BasePart") and inst.CFrame
 			ondeletion({Event = event,
