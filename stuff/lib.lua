@@ -452,6 +452,17 @@ lib.Utilities.newMetatable = function(public)
 	end
 	return publicStorage or public
 end
+lib.Utilities.RandomString = function(length, seed)
+	local storage = {result = ""}
+	if tonumber(length) and length > 1 then
+		for i = 1, length do
+			storage.result = storage.result..utf8.char(lib.Utilities.Random(0, 1114111, seed).Integer)
+		end
+	else
+		storage.result = utf8.char(lib.Utilities.Random(0, 1114111, seed).Integer)
+	end
+	return storage.result
+end
 lib.Utilities.fastSpawn = function(func, ...)
 	local thread_ = {}
 	if not storage.fastSpawnRemote then
