@@ -21,9 +21,6 @@ local carter = {new = function(api_key, version)
 		V0 = function()
 			warn("i dont really recommend using v0 since they added v1 but its up to you")
 			storage.url = "https://api.carterapi.com/v0/chat"
-			if scene then
-				storage.scene = tostring(scene)
-			end
 			function bot:Send(msg, player)
 				assert(storage.CanChat,"Bot#"..tostring(table.find(bots, bot)).." is disabled")
 				local id = player and player.UserId or 0
@@ -38,7 +35,7 @@ local carter = {new = function(api_key, version)
 						api_key = storage.key,
 						query = msg,
 						uuid = id,
-						scene = storage.scene
+						scene = "Normal"
 					})
 				})
 				assert(response.Success,"Response fail: "..response.StatusCode..", "..response.StatusMessage)
