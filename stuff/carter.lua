@@ -73,13 +73,9 @@ local carter = {new = function(api_key, version_)
 					})
 				})
 				assert(response.Success,"Response fail: "..response.StatusCode..", "..response.StatusMessage)
-				local reply = HttpService:JSONDecode(response.Body)
-					local outputData = {
-						Player = player,
-						Time_Taken = reply.time_taken,
-						Credits_Used = reply.credits_used
-					}
-				local outputText = reply.output.text
+				local outputData = HttpService:JSONDecode(response.Body)
+				local outputText = outputData.output.text
+				outputData.Player = player
 				BotChatted:Fire(outputText, outputData)
 				return outputText, outputData
 			end
