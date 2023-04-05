@@ -35,7 +35,7 @@ local carter = {new = function(api_key, version)
 						api_key = storage.key,
 						query = msg,
 						uuid = id,
-						scene = "Normal"
+						scene = storage.scene
 					})
 				})
 				assert(response.Success,"Response fail: "..response.StatusCode..", "..response.StatusMessage)
