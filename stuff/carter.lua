@@ -4,7 +4,6 @@ local bots = {}
 local carter = {new = function(api_key, version)
 	local storage = {
 		key = "",
-		scene = "Normal",
 		CanChat = true,
 		ids = {}
 	}
@@ -21,6 +20,7 @@ local carter = {new = function(api_key, version)
 		V0 = function()
 			warn("i dont really recommend using v0 since they added v1 but its up to you")
 			storage.url = "https://api.carterapi.com/v0/chat"
+			storage.scene = "Normal"
 			function bot:Send(msg, player)
 				assert(storage.CanChat,"Bot#"..tostring(table.find(bots, bot)).." is disabled")
 				local id = player and player.UserId or 0
