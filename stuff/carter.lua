@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
 local bots = {}
-local carter = {new = function(api_key, version)
+local carter = {new = function(api_key, version_)
 	local storage = {
 		key = "",
 		CanChat = true,
@@ -85,10 +85,11 @@ local carter = {new = function(api_key, version)
 			end
 		end
 	}
-	local botVersion = Versions[version]
+	assert(version_ and typeof(version_) == "string", "Expected version")
+	local botVersion = Versions[version_]
 	assert(botVersion, "Invalid version")
 	storage.key = tostring(api_key)
-	bot.Version = version
+	bot.Version = version_
 	botVersion()
 	table.insert(bots, bot)
 	return bot
