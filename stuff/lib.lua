@@ -90,7 +90,7 @@ local function forever(func)
 end
 local function setproperty(target, index, value)
 	if tonumber(index) then
-		value.Parent = value.Parent or target
+		value.Parent = target
 	else
 		target[index] = value
 	end
