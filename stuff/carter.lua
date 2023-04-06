@@ -43,8 +43,8 @@ local carter = {new = function(api_key, version_)
 					uuid = id,
 					scene = storage.scene
 				})
-				outputData.Player = player,
 				local outputText = outputData.output.text
+				outputData.Player = player
 				BotChatted:Fire(outputText, outputData)
 				return outputText, outputData
 			end
