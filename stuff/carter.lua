@@ -1,5 +1,14 @@
 local HttpService = game:GetService("HttpService")
 local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
+local function getResponse(data)
+	local response = HttpService:RequestAsync({Url = storage.url,
+		Method = "POST",
+		Headers = {["Content-Type"] = "application/json"},
+		Body = HttpService:JSONEncode(data)
+	})
+	assert(response.Success, "Response fail: "..response.StatusCode..", "..response.StatusMessage)
+	return HttpService:JSONDecode(response.Body)
+end
 local bots = {}
 local carter = {new = function(api_key, version_)
 	local storage = {
@@ -28,24 +37,18 @@ local carter = {new = function(api_key, version_)
 					table.insert(storage.ids,id)
 					ChatterEvent:AddChatter(player)
 				end
-				local response = HttpService:RequestAsync({Url = storage.url,
-					Method = "POST",
-					Headers = {["Content-Type"] = "application/json"},
-					Body = HttpService:JSONEncode({
-						api_key = storage.key,
-						query = msg,
-						uuid = id,
-						scene = storage.scene
-					})
+				local reply = getResponse({
+					api_key = storage.key,
+					query = msg,
+					uuid = id,
+					scene = storage.scene
 				})
-				assert(response.Success,"Response fail: "..response.StatusCode..", "..response.StatusMessage)
-				local reply = HttpService:JSONDecode(response.Body)
-					local outputData = {
-						Player = player,
-						Time_Taken = reply.time_taken,
-						Credits_Used = reply.credits_used
-					}
-			local outputText = reply.output.text
+				local outputData = {
+					Player = player,
+					Time_Taken = reply.time_taken,
+					Credits_Used = reply.credits_used
+				}
+				local outputText = reply.output.text
 				BotChatted:Fire(outputText, outputData)
 				return outputText, outputData
 			end
@@ -63,17 +66,11 @@ local carter = {new = function(api_key, version_)
 					table.insert(storage.ids,id)
 					ChatterEvent:AddChatter(player)
 				end
-				local response = HttpService:RequestAsync({Url = storage.url,
-					Method = "POST",
-					Headers = {["Content-Type"] = "application/json"},
-					Body = HttpService:JSONEncode({
-						key = storage.key,
-						text = msg,
-						playerId = id,
-					})
+				local outputData = getResponse({
+					key = storage.key,
+					text = msg,
+					playerId = id,
 				})
-				assert(response.Success,"Response fail: "..response.StatusCode..", "..response.StatusMessage)
-				local outputData = HttpService:JSONDecode(response.Body)
 				local outputText = outputData.output.text
 				outputData.Player = player
 				BotChatted:Fire(outputText, outputData)
