@@ -28,7 +28,7 @@ local carter = {new = function(api_key, version_)
 	end
 	local Versions = {
 		V0 = function()
-			warn("i dont really recommend using v0 since they added v1 but its up to you")
+			warn("V0 is still available but it is highly recommended to use V1 as the AI is better, the decision is up to you.")
 			storage.scene = "Normal"
 			function bot:Send(msg, player)
 				assert(storage.CanChat,"Bot#"..tostring(table.find(bots, bot)).." is disabled")
