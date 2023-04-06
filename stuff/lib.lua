@@ -90,7 +90,7 @@ local function forever(func)
 end
 local function setproperty(target, index, value)
 	if tonumber(index) then
-		value.Parent = target
+		value.Parent = value.Parent or target
 	else
 		target[index] = value
 	end
@@ -491,18 +491,5 @@ lib.Utilities.GetCreated = function(getnil)
 		end)
 		return found
 	end
-end
-lib.Utilities.GetCreatedByName = function(name, getnil)
-	local found = {}
-	lib.Loops.read(created, function(i, v)
-		if v.Name == name then
-			if getnil then
-				table.insert(found, v)
-			elseif v.Parent ~= nil then
-				table.insert(found, v)
-			end
-		end
-	end)
-	return found
 end
 return lib
