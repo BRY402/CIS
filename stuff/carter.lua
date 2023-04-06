@@ -37,14 +37,14 @@ local carter = {new = function(api_key, version_)
 					table.insert(storage.ids,id)
 					ChatterEvent:AddChatter(player)
 				end
-				local reply = getResponse({
+				local outputData = getResponse({
 					api_key = storage.key,
 					query = msg,
 					uuid = id,
 					scene = storage.scene
 				})
 				outputData.Player = player,
-				local outputText = reply.output.text
+				local outputText = outputData.output.text
 				BotChatted:Fire(outputText, outputData)
 				return outputText, outputData
 			end
