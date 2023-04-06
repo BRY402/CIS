@@ -1,8 +1,8 @@
 local HttpService = game:GetService("HttpService")
 local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
-local function getResponse(data)
+local function getResponse(url, data)
 	local response = HttpService:RequestAsync({
-		Url = storage.url,
+		Url = url,
 		Method = "POST",
 		Headers = {["Content-Type"] = "application/json"},
 		Body = HttpService:JSONEncode(data)
@@ -29,7 +29,6 @@ local carter = {new = function(api_key, version_)
 	local Versions = {
 		V0 = function()
 			warn("i dont really recommend using v0 since they added v1 but its up to you")
-			storage.url = "https://api.carterapi.com/v0/chat"
 			storage.scene = "Normal"
 			function bot:Send(msg, player)
 				assert(storage.CanChat,"Bot#"..tostring(table.find(bots, bot)).." is disabled")
@@ -38,7 +37,7 @@ local carter = {new = function(api_key, version_)
 					table.insert(storage.ids,id)
 					ChatterEvent:AddChatter(player)
 				end
-				local outputData = getResponse({
+				local outputData = getResponse("https://api.carterapi.com/v0/chat", {
 					api_key = storage.key,
 					query = msg,
 					uuid = id,
@@ -55,7 +54,6 @@ local carter = {new = function(api_key, version_)
 			end
 		end,
 		V1 = function()
-			storage.url = "https://api.carterlabs.ai/chat"
 			function bot:Send(msg, player)
 				assert(storage.CanChat,"Bot#"..tostring(table.find(bots, bot)).." is disabled")
 				local id = player and player.UserId or 0
@@ -63,7 +61,7 @@ local carter = {new = function(api_key, version_)
 					table.insert(storage.ids,id)
 					ChatterEvent:AddChatter(player)
 				end
-				local outputData = getResponse({
+				local outputData = getResponse("https://api.carterlabs.ai/chat", {
 					key = storage.key,
 					text = msg,
 					playerId = id,
