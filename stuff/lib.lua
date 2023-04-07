@@ -125,6 +125,48 @@ local function setproperties(Properties, inst)
 		end
 	end
 end
+local function clone(inst)
+	if not storage.clonable then
+		storage.clonable = Instance.new("Script")
+	end
+	if inst then
+		local archivable = inst.Archivable
+		inst.Archivable = true
+		local newInst = storage.clonable.Clone(inst)
+		inst.Archivable = archivable
+		return newInst
+	end
+end
+local function create(Class, Parent, Properties)
+	if not storage.cache then
+		storage.cache = {}
+	end
+	local realInst
+	local createdClonableInst = storage.cache[Class]
+	if not createdClonableInst then
+		local inst = Instance.new(Class)
+		storage.cache[Class] = inst
+		realInst = clone(inst)
+	else
+		realInst = clone(createdClonableInst)
+	end
+	if realInst ~= nil then
+		if Properties and Properties ~= true then
+			setproperties(Properties,realInst)
+		elseif Properties == true then
+			return function(Properties)
+				setproperties(Properties,realInst)
+				realInst.Parent = Parent
+				return realInst
+			end
+		end
+		if Parent then
+			realInst.Parent = Parent
+		end
+	end
+	table.insert(created, realInst)
+	return realInst
+end
 local function checkMetamethod(toWritte, index, value)
 	if table.find(metaMethods, index) then
 		toWritte[index] = value
@@ -135,7 +177,7 @@ local lib = {
 		newEvent = function(eventName, callerName, methodOrFunction)
 			local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
 			local storage = {
-				event = lib.Utilities.Create("BindableEvent"),
+				event = create("BindableEvent"),
 				Connections = {}
 			}
 			local returned = {[eventName] = setmetatable({}, {
@@ -220,54 +262,14 @@ local lib = {
 			Debris:AddItem(ins,tonumber(delay) or 0)
 		end
 	end,
-	Clone = function(inst)
-		if not storage.clonable then
-			storage.clonable = Instance.new("Script")
-		end
-		if inst then
-			local archivable = inst.Archivable
-			inst.Archivable = true
-			local newInst = storage.clonable.Clone(inst)
-			inst.Archivable = archivable
-			return newInst
-		end
-	end,
+	Clone = clone,
 	Loops = {
 		range = range,
 		read = read,
 		forever = forever
 	}
 }
-lib.Create = function(Class, Parent, Properties)
-	if not storage.cache then
-		storage.cache = {}
-	end
-	local realInst
-	local createdClonableInst = storage.cache[Class]
-	if not createdClonableInst then
-		local inst = Instance.new(Class)
-		storage.cache[Class] = inst
-		realInst = lib.Clone(inst)
-	else
-		realInst = lib.Clone(createdClonableInst)
-	end
-	if realInst ~= nil then
-		if Properties and Properties ~= true then
-			setproperties(Properties,realInst)
-		elseif Properties == true then
-			return function(Properties)
-				setproperties(Properties,realInst)
-				realInst.Parent = Parent
-				return realInst
-			end
-		end
-		if Parent then
-			realInst.Parent = Parent
-		end
-	end
-	table.insert(created, realInst)
-	return realInst
-end
+lib.Create = create
 lib.Utilities.newMetatable = function(public)
 	local publicMeta = getmetatable(public)
 	local publicStorage = typeof(public) == "userdata" and typeof(publicMeta) == "table" and {} or nil
