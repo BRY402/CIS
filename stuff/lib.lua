@@ -203,21 +203,21 @@ local lib = {
 				local connection = storage.event.Event:Connect(function()
 					func(table.unpack(storage.args))
 				end)
-				table.insert(returned.Connections, connection)
+				table.insert(storage.Connections, connection)
 				return connection
 			end
 			function event:ConnectParallel(func)
 				local connection = storage.event.Event:ConnectParallel(function()
 					func(table.unpack(storage.args))
 				end)
-				table.insert(returned.Connections, connection)
+				table.insert(storage.Connections, connection)
 				return connection
 			end
 			function event:Once(func)
 				local connection = storage.event.Event:Once(function()
 					func(table.unpack(storage.args))
 				end)
-				table.insert(returned.Connections, connection)
+				table.insert(storage.Connections, connection)
 				return connection
 			end
 			function event:Wait(waittime, silent)
