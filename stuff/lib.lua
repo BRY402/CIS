@@ -200,21 +200,21 @@ local lib = {
 				end
 			end
 			function event:Connect(func)
-				local connection = storage.event:Connect(function()
+				local connection = storage.event.Event:Connect(function()
 					func(table.unpack(storage.args))
 				end)
 				table.insert(returned.Connections, connection)
 				return connection
 			end
 			function event:ConnectParallel(func)
-				local connection = storage.event:ConnectParallel(function()
+				local connection = storage.event.Event:ConnectParallel(function()
 					func(table.unpack(storage.args))
 				end)
 				table.insert(returned.Connections, connection)
 				return connection
 			end
 			function event:Once(func)
-				local connection = storage.event:Once(function()
+				local connection = storage.event.Event:Once(function()
 					func(table.unpack(storage.args))
 				end)
 				table.insert(returned.Connections, connection)
@@ -224,7 +224,7 @@ local lib = {
 				local waittime = tonumber(waittime) or math.huge
 				local waitStorage = {CurrentWaitTime = 0}
 				task.spawn(function()
-					storage.event:Wait()
+					storage.event.Event:Wait()
 					waitStorage.args = storage.args
 				end)
 				repeat
