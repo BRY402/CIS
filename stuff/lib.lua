@@ -143,7 +143,7 @@ local lib = {
 					return rawget(self, i) or storage.event[i]
 				end,
 				__metatable = "This metatable is locked."
-			})
+			})}
 			local event = returned[eventName]
 			function returned:GetConnections()
 				return storage.Connections
