@@ -180,15 +180,36 @@ local lib = {
 				event = create("BindableEvent"),
 				Connections = {}
 			}
-			local returned = {[eventName] = setmetatable({}, {
-				__index = function(self, i)
-					return rawget(self, i) or storage.event[i]
+			local returned = {
+				[eventName] = setmetatable({}, {
+					__index = function(self, i)
+						return rawget(self, i) or storage.event[i]
+					end,
+					__metatable = "This metatable is locked."
+				}),
+				Enabled = true,
+				Disabled = false
+			}
+			setmetatable(returned, {
+				__newindex = function(self, i, v)
+					if i == "Enabled" then
+						rawset(self, "Disabled", not v)
+					elseif i == "Disabled" then
+						rawset(self, "Enabled", not v)
+					else
+						rawset(self, i, v)
+					end
 				end,
 				__metatable = "This metatable is locked."
-			})}
+			})
 			local event = returned[eventName]
 			function returned:GetConnections()
 				return storage.Connections
+			end
+			function returned:DisconnectAll()
+				lib.Loops.read(storage.Connections, function(i, connection)
+					connection:Disconnect()
+				end)
 			end
 			returned[callerName or "Fire"] = function(self, ...)
 				if methodOrFunction == "Method" then
