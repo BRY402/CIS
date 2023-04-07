@@ -189,7 +189,7 @@ local lib = {
 					waitStorage.CurrentWaitTime = waitStorage.CurrentWaitTime + task.wait()
 					if waitStorage.CurrentWaitTime >= waittime then
 						assert(silent, "Hit wait deadline.")
-						return
+						break
 					end
 				until waitStorage.args
 				return table.unpack(waitStorage.args)
