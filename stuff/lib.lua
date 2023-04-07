@@ -195,7 +195,7 @@ local lib = {
 					storage.args = packtuple(...)
 					storage.event:Fire()
 				else
-					storage.args = lib.Utilities.Pack(self, ...)
+					storage.args = packtuple(self, ...)
 					storage.event:Fire()
 				end
 			end
