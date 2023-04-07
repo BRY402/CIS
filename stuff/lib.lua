@@ -192,7 +192,7 @@ local lib = {
 						break
 					end
 				until waitStorage.args
-				return table.unpack(waitStorage.args)
+				return table.unpack(waitStorage.args or storage.args)
 			end
 			event.connect = event.Connect
 			event.connectparallel = event.ConnectParallel
