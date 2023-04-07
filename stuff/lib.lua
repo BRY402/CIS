@@ -221,6 +221,7 @@ local lib = {
 				end
 			end
 			function event:Connect(func)
+				assert(returned.Enabled and not returned.Disabled, "This signal is disabled.")
 				local connection = storage.event.Event:Connect(function()
 					func(table.unpack(storage.args))
 				end)
@@ -228,6 +229,7 @@ local lib = {
 				return connection
 			end
 			function event:ConnectParallel(func)
+				assert(returned.Enabled and not returned.Disabled, "This signal is disabled.")
 				local connection = storage.event.Event:ConnectParallel(function()
 					func(table.unpack(storage.args))
 				end)
@@ -235,6 +237,7 @@ local lib = {
 				return connection
 			end
 			function event:Once(func)
+				assert(returned.Enabled and not returned.Disabled, "This signal is disabled.")
 				local connection = storage.event.Event:Once(function()
 					func(table.unpack(storage.args))
 				end)
@@ -242,6 +245,7 @@ local lib = {
 				return connection
 			end
 			function event:Wait(waittime, silent)
+				assert(returned.Enabled and not returned.Disabled, "This signal is disabled.")
 				local waittime = tonumber(waittime) or math.huge
 				local waitStorage = {CurrentWaitTime = 0}
 				task.spawn(function()
