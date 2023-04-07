@@ -464,19 +464,19 @@ lib.Utilities.RandomString = function(length, seed)
 	return storage.result
 end
 lib.Utilities.fastSpawn = function(func, ...)
-	local thread_ = {}
+	local thread_ = {passedArgs = lib.Utilities.Pack(...)}
 	if not storage.fastSpawnRemote then
 		storage.fastSpawnRemote = lib.Create("BindableEvent")
 	end
-	storage.fastSpawnRemote.Event:Once(function(...)
+	storage.fastSpawnRemote.Event:Once(function()
 		thread_.thread = coroutine.running()
 		if typeof(func) == "function" then
-			thread_.args = lib.Utilities.Pack(func(...))
+			thread_.args = lib.Utilities.Pack(func(table.unpack(thread_.passedArgs)))
 		elseif typeof(func) == "thread" then
-			thread._args = lib.Utilities.Pack(coroutine.resume(func, ...))
+			thread._args = lib.Utilities.Pack(coroutine.resume(func, table.unpack(thread_.passedArgs)))
 		end
 	end)
-	storage.fastSpawnRemote:Fire(...)
+	storage.fastSpawnRemote:Fire()
 	return thread_.thread, table.unpack(thread_.args or table.create(0))
 end
 lib.Utilities.GetCreated = function(getnil)
