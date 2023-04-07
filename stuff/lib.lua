@@ -207,7 +207,7 @@ local lib = {
 				return storage.Connections
 			end
 			function returned:DisconnectAll()
-				lib.Loops.read(storage.Connections, function(i, connection)
+				read(storage.Connections, function(i, connection)
 					connection:Disconnect()
 				end)
 			end
