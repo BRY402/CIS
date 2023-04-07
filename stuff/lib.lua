@@ -134,93 +134,64 @@ local lib = {
 	Utilities = {
 		newEvent = function(eventName, callerName, methodOrFunction)
 			local methodOrFunction = methodOrFunction and methodOrFunction or "Method"
-			local Connections = {}
-			local returned = {[eventName] = {}}
+			local storage = {
+				event = lib.Utilities.Create("BindableEvent"),
+				Connections = {}
+			}
+			local returned = {[eventName] = setmetatable({}, {
+				__index = function(self, i)
+					return rawget(self, i) or storage.event[i]
+				end,
+				__metatable = "This metatable is locked."
+			})
+			local event = returned[eventName]
 			function returned:GetConnections()
-				return Connections
+				return storage.Connections
 			end
 			returned[callerName or "Fire"] = function(self, ...)
 				if methodOrFunction == "Method" then
-					local args = packtuple(...)
-					read(Connections,function(i,Connection)
-						Connection:Call(unpack(args))
-						if Connection.Type == "Once" or Connection.Type == "Wait" then
-							table.remove(Connections, table.find(Connections, Connection))
-						end
-					end)
+					storage.args = lib.Utilities.Pack(...)
+					storage.event:Fire()
 				else
-					local args = packtuple(self,...)
-					read(Connections,function(i,Connection)
-						Connection:Call(unpack(args))
-						if Connection.Type == "Once" or Connection.Type == "Wait" then
-							table.remove(Connections, table.find(Connections, Connection))
-						end
-					end)
+					storage.args = lib.Utilities.Pack(self, ...)
+					storage.event:Fire()
 				end
 			end
-			local event = returned[eventName]
 			function event:Connect(func)
-				local calledConnection = {Type = "Connect"}
-				function calledConnection:Call(...)
-					task.spawn(func,...)
-				end
-				table.insert(Connections,calledConnection)
-				local Connection = {}
-				function Connection:Disconnect()
-					assert(table.find(Connections,func),"Connection was already disconnected")
-					table.remove(Connections, table.find(Connections, func))
-				end
-				Connection.disconnect = Connection.Disconnect
-				return Connection
+				local connection = storage.event:Connect(function()
+					func(table.unpack(storage.args))
+				end)
+				table.insert(returned.Connections, connection)
+				return connection
 			end
 			function event:ConnectParallel(func)
-				local calledConnection = {Type = "ConnectParellel"}
-				function calledConnection:Call(...)
-					task.desynchronize()
-					task.spawn(func,...)
-				end
-				table.insert(Connections,calledConnection)
-				local Connection = {}
-				function Connection:Disconnect()
-					assert(table.find(Connections,func),"Connection was already disconnected")
-					table.remove(Connections, table.find(Connections, func))
-				end
-				Connection.disconnect = Connection.Disconnect
-				return Connection
+				local connection = storage.event:ConnectParallel(function()
+					func(table.unpack(storage.args))
+				end)
+				table.insert(returned.Connections, connection)
+				return connection
 			end
 			function event:Once(func)
-				local calledConnection = {Type = "Once"}
-				function calledConnection:Call(...)
-					task.spawn(func,...)
-				end
-				table.insert(Connections,calledConnection)
-				local Connection = {Connected = true}
-				function Connection:Disconnect()
-					assert(table.find(Connections,func),"Connection was already disconnected")
-					Connection.Connected = false
-					table.remove(Connections, table.find(Connections, func))
-				end
-				Connection.disconnect = Connection.Disconnect
-				return Connection
+				local connection = storage.event:Once(function()
+					func(table.unpack(storage.args))
+				end)
+				table.insert(returned.Connections, connection)
+				return connection
 			end
 			function event:Wait(waittime, silent)
 				local waittime = tonumber(waittime) or math.huge
-				local calledConnection = {Type = "Wait", CurrentWaitTime = 0}
-				function calledConnection:Call(...)
-					self.Arguments = packtuple(...)
-				end
-				table.insert(Connections, calledConnection)
+				local waitStorage = {CurrentWaitTime = 0}
+				task.spawn(function()
+					storage.event:Wait()
+					waitStorage.args = storage.args
+				end)
 				repeat
-					calledConnection.CurrentWaitTime = calledConnection.CurrentWaitTime + task.wait()
-					if calledConnection.CurrentWaitTime >= waittime then
-						table.remove(Connections, table.find(Connections, calledConnection))
-						if not silent then
-							error("Hit deadline for connection.")
-						end
-						break
+					waitStorage.CurrentWaitTime = waitStorage.CurrentWaitTime + task.wait()
+					if waitStorage.CurrentWaitTime >= waittime then
+						assert(silent, "Hit wait deadline.")
 					end
-				until calledConnection.Arguments
-				return table.unpack(calledConnection.Arguments or table.create(0))
+				until waitStorage.args
+				return table.unpack(waitStorage.args)
 			end
 			event.connect = event.Connect
 			event.connectparallel = event.ConnectParallel
