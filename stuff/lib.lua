@@ -1,4 +1,3 @@
-local Debris = game:GetService("Debris")
 local storage = {}
 local nilinstances = {}
 local created = {}
@@ -282,9 +281,9 @@ local lib = {
 		end,
 		Pack = packtuple
 		},
-	Destroy = function(ins,delay)
-		if ins then
-			Debris:AddItem(ins,tonumber(delay) or 0)
+	Destroy = function(target, delay)
+		if target then
+			task.delay(tonumber(delay) or 0, game.Destroy, target)
 		end
 	end,
 	Clone = clone,
