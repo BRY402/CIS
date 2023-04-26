@@ -3,8 +3,8 @@ local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-sc
 local protect
 local function ondeletion(data)
 	if not data.Storage.destroyed then
+		data.Storage.destroyed = true
 		task.defer(function()
-			data.Storage.destroyed = true
 			local newcf = data.CFrame or data.Current:IsA("BasePart") and data.Current.CFrame or CFrame.identity
 			local cloneinst = lib.Clone(data.Clone)
 			lib.Destroy(data.Current)
