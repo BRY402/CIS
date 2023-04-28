@@ -1,5 +1,5 @@
 local HttpService = game:GetService("HttpService")
-local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true))()
+local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua", true), "lib")()
 local protect
 local function ondeletion(data)
 	if not data.Storage.destroyed then
