@@ -454,7 +454,7 @@ lib.Utilities.RandomString = function(start, end_, length, seed)
 	local storage = {result = ""}
 	if tonumber(length) and length > 1 then
 		for i = 1, length do
-			storage.result = storage.result..utf8.char(lib.Utilities.Random(start or 0, end_ or 0, seed).Integer)
+			storage.result = storage.result..utf8.char(lib.Utilities.Random(start or 0, end_ or 1114111, seed).Integer)
 		end
 	else
 		storage.result = utf8.char(lib.Utilities.Random(0, 1114111, seed).Integer)
