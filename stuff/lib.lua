@@ -457,7 +457,7 @@ lib.Utilities.RandomString = function(start, end_, length, seed)
 			storage.result = storage.result..utf8.char(lib.Utilities.Random(start or 0, end_ or 1114111, seed).Integer)
 		end
 	else
-		storage.result = utf8.char(lib.Utilities.Random(start or 0, end_ or 1114111, seed).Integer)
+		return utf8.char(lib.Utilities.Random(start or 0, end_ or 1114111, seed).Integer)
 	end
 	return storage.result
 end
