@@ -246,13 +246,19 @@ local lib = {
 			function event:Wait(waittime, silent)
 				assert(returned.Enabled and not returned.Disabled, "This signal is disabled.")
 				local waittime = tonumber(waittime) or math.huge
-				local waitStorage = {CurrentWaitTime = 0}
+				local waitStorage = {
+					CurrentWaitTime = 0,
+					Warned = false
+				}
 				task.spawn(function()
 					storage.event.Event:Wait()
 					waitStorage.args = storage.args
 				end)
 				repeat
 					waitStorage.CurrentWaitTime = waitStorage.CurrentWaitTime + task.wait()
+					if not waitStorage.Warned and waitSotrage.CurrentWaitTime >= 5 and waittime > 5 then
+						waitStorage.Warned = true
+						warn("Infinite yield possible on event '"..eventNane.."'")
 					if waitStorage.CurrentWaitTime >= waittime then
 						assert(silent, "Hit wait deadline.")
 						break
