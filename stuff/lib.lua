@@ -259,6 +259,7 @@ local lib = {
 					if not waitStorage.Warned and waitSotrage.CurrentWaitTime >= 5 and waittime > 5 then
 						waitStorage.Warned = true
 						warn("Infinite yield possible on event '"..eventNane.."'")
+					end
 					if waitStorage.CurrentWaitTime >= waittime then
 						assert(silent, "Hit wait deadline.")
 						break
