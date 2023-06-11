@@ -256,7 +256,7 @@ local lib = {
 				end)
 				repeat
 					waitStorage.CurrentWaitTime = waitStorage.CurrentWaitTime + task.wait()
-					if not waitStorage.Warned and waitSotrage.CurrentWaitTime >= 5 and waittime > 5 then
+					if not waitStorage.Warned and waitStorage.CurrentWaitTime >= 5 and waittime > 5 then
 						waitStorage.Warned = true
 						warn("Infinite yield possible on event '"..eventNane.."'")
 					end
