@@ -258,7 +258,7 @@ local lib = {
 					waitStorage.CurrentWaitTime = waitStorage.CurrentWaitTime + task.wait()
 					if not waitStorage.Warned and waitStorage.CurrentWaitTime >= 5 and waittime > 5 then
 						waitStorage.Warned = true
-						warn("Infinite yield possible on event '"..eventNane.."'")
+						warn("Infinite yield possible on event '"..eventName.."'")
 					end
 					if waitStorage.CurrentWaitTime >= waittime then
 						assert(silent, "Hit wait deadline.")
