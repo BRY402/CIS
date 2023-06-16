@@ -236,7 +236,7 @@ terminal = {
 		local data = {Progress = 0}
 		local track = terminal.newlog()
 		local texttrack = "["..string.rep("-", legth).."]"
-		table.insert(threadMng.Threads, task.spawn(function()
+		table.insert(env.threadMng.Threads, task.spawn(function()
 			repeat
 				local storage = {count = 0}
 				local Progress = tonumber(data.Progress) or 0
