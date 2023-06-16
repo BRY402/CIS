@@ -1,7 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local sandboxed_env = getfenv()
 local tostring
-local currentTextbox
 local env = {}
 local terminal
 local io
@@ -61,7 +60,7 @@ env.threadMng = {
 				task.wait()
 			end
 		end
-		table.remove(env.threadMng.Threads,table.find(env.threadMng.Threads,coroutine.running()))
+		table.remove(env.threadMng.Threads, table.find(env.threadMng.Threads,coroutine.running()))
 		coroutine.yield()
 	end
 }
@@ -76,9 +75,6 @@ io = {
 		inputHandler.secretInput = false
 		assert(#args > 0, "io.read failure, response took too long or input is empty.")
 		return table.unpack(args)
-	end,
-	write = function(str)
-		currentTextbox.Text = currentTextbox.Text..str
 	end,
 	fire = function(...)
 		inputHandler.inputEvent:Fire(...)
