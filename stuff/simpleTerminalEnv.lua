@@ -228,10 +228,10 @@ local slashes = {
     "\\"
 }
 terminal = {
-	createLoadingBar = function(legth)
+	createLoadingBar = function(length)
 		local data = {Progress = 0}
 		local track = terminal.newlog()
-		local texttrack = "["..string.rep("-", legth).."]"
+		local texttrack = "["..string.rep("-", length).."]"
 		table.insert(env.threadMng.Threads, task.spawn(function()
 			repeat
 				local storage = {count = 0}
