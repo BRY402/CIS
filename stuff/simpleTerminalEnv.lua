@@ -232,24 +232,6 @@ local slashes = {
     "\\"
 }
 terminal = {
-	currentWindow = win,
-	print = function(...)
-		local args = {}
-		lib.Loops.read(lib.Utilities.Pack(...), function(i, v)
-			table.insert(args, tostring(v))
-		end)
-		outputmsg("> "..table.concat(args," "), Color3.new(1, 1, 1))
-	end,
-	warn = function(...)
-		local args = {}
-		lib.Loops.read(lib.Utilities.Pack(...), function(i, v)
-			table.insert(args, tostring(v))
-		end)
-		outputmsg(os.date("%X").. " - "..table.concat(args," "), Color3.new(1, .5, 0))
-	end,
-	error = function(fail)
-		outputmsg(os.date("%X").. " - "..fail, Color3.new(1, 0, 0))
-	end,
 	createLoadingBar = function(legth)
 		local data = {Progress = 0}
 		local track = terminal.newlog()
@@ -287,10 +269,6 @@ terminal = {
 		}
 	}
 }
-env.printr = print
-env.warnr = warn
-env.print = terminal.print
-env.warn = terminal.warn
 env.terminal = terminal
 function terminal.Internal:tabletostr(table_, name, main_table)
 	local tostring = self.tostring
