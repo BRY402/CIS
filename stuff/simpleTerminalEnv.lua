@@ -228,29 +228,6 @@ local slashes = {
     "\\"
 }
 terminal = {
-	createLoadingBar = function(length)
-		local data = {Progress = 0}
-		local track = terminal.newlog()
-		local texttrack = "["..string.rep("-", length).."]"
-		table.insert(env.threadMng.Threads, task.spawn(function()
-			repeat
-				local storage = {count = 0}
-				local Progress = tonumber(data.Progress) or 0
-				track.Text = "Progress: "..math.floor(Progress).."% "..slashes[math.floor((os.clock() * 10) % 3) + 1].."\n"..string.gsub(texttrack, ".", function(c)
-					if c ~= "[" and c ~= "]" then
-						storage.count = storage.count + 1
-						if math.floor(data.Progress * length) > storage.count then
-							return "="
-						end
-					end
-				end)
-				task.wait()
-			until data.Progress >= 100
-			local Progress = tonumber(data.Progress) or 0
-			track.Text = "Progress: "..math.floor(Progress).."%\n["..string.rep("=", length).."]"
-		end))
-		return data
-	end,
 	exec = exec,
 	extensions = extensions,
 	Internal = {
