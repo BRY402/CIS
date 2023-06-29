@@ -1,7 +1,7 @@
 local HttpService = game:GetService("HttpService")
 local sandboxed_env = getfenv()
-local tostring
 local env = {}
+local tostring
 local terminal
 local io
 local imports = {
@@ -18,7 +18,7 @@ local function import(name)
 		assert(func, "Import failure: "..(fail or ""))
 		local returned = table.pack(setfenv(func, setmetatable({}, {
 			__index = function(self, index)
-				return env[index] or getfenv()[index]
+				return env[index] or sandboxed_env[index]
 			end,
 			__newindex = rawset
 		}))())
@@ -29,7 +29,7 @@ local function import(name)
 		assert(func, "Import failure: "..(fail or ""))
 		local returned = table.pack(setfenv(func, setmetatable({}, {
 			__index = function(self, index)
-				return env[index] or getfenv()[index]
+				return env[index] or sandboxed_env[index]
 			end,
 			__newindex = rawset
 		}))())
