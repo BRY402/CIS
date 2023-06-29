@@ -1,5 +1,5 @@
+local env = getfenv()
 local storage = {}
-local nilinstances = {}
 local created = {}
 local metaMethods = {
 	"__index",
@@ -102,7 +102,7 @@ local function setproperties(Properties, inst)
 			assert(typeof(selfFunc) == "function","__self index is expected to be a function")
 			task.spawn(function()
 				local env = setmetatable({self = Properties},{__index = function(self,i)
-						return rawget(self,i) or getfenv()[i]
+						return rawget(self,i) or env[i]
 					end,
 					__newindex = function(self,i,v)
 						rawset(self,i,v)
