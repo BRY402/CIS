@@ -236,9 +236,7 @@ terminal = {
 			__index = function(self, index)
 				return rawget(self, index) or sandboxed_env[index]
 			end,
-			__newindex = function(self, index, value)
-				rawset(self, index, value)
-			end
+			__newindex = rawset
 		}
 	}
 }
