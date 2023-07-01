@@ -23,7 +23,7 @@ local function import(name)
 					return function(filelocation)
 						local split = string.split(url, "/")
 						table.remove(split, 1)
-						local url = table.concat(split, "/")..filelocation
+						local url = table.concat(split, "/").."/"..filelocation
 						local splitextension = string.split(url, ".")
 						local extension = extensions[splitextension[#splitextension]]
 						assert(extension, "Invalid extension or none was provided.")
@@ -45,7 +45,7 @@ local function import(name)
 					return function(filelocation)
 						local split = string.split(url, "/")
 						table.remove(split, 1)
-						local url = table.concat(split, "/")..filelocation
+						local url = table.concat(split, "/").."/"..filelocation
 						local splitextension = string.split(url, ".")
 						local extension = extensions[splitextension[#splitextension]]
 						assert(extension, "Invalid extension or none was provided.")
