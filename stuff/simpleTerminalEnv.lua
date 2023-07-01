@@ -6,9 +6,7 @@ local terminal
 local extensions
 local io
 local imports = {
-	tpscript = "https://raw.githubusercontent.com/headsmasher8557/tpscript/main/init.lua",
 	comradio = "https://gist.github.com/BRY402/fc0952ccabd77cf77a7183517f4507ac/raw",
-	encrypt = "https://raw.githubusercontent.com/Wapplee/Lua-Sandbox-Scripts/main/Modules/Encode-Decode.lua",
 	html = "https://gist.github.com/BRY402/212bd48e3778968791e445503facea97/raw"
 }
 env.imports = imports
@@ -37,7 +35,7 @@ local function import(name)
 		returned.n = nil
 		return table.unpack(returned)
 	else
-		local func, fail = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/"..name..".lua", true), name)
+		local func, fail = loadstring(HttpService:GetAsync("https://raw.githubusercontent.com/"..name..".lua", true), name)
 		assert(func, "Import failure: "..(fail or ""))
 		local returned = table.pack(setfenv(func, setmetatable({}, {
 			__index = function(self, index)
@@ -60,8 +58,8 @@ local function import(name)
 		return table.unpack(returned)
 	end
 end
-local lib = import("lib")
-local tpscript = import("tpscript")
+local lib = import("BRY402/random-scripts/main/stuff/lib")
+local tpscript = import("headsmasher8557/tpscript/main/init")
 local html = import("html")
 local inputHandler = {
 	expectingInput = false,
