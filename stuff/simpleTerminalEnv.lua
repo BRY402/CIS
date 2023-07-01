@@ -20,7 +20,17 @@ local function import(name)
 				if index == "load" then
 					return function(filelocation)
 						local split = string.split(url, "/")
-						table.remove(split, 1)
+						table.remove(split, #split)
+						local splitlocation = string.split(filelocation, "/")
+						for i = 1, #splitlocation do
+							local v = splitlocation[#splitlocation]
+							if v == ".." then
+								table.remove(split, #split)
+								table.remove(splitlocation, i)
+							elseif v == "." then
+								table.remove(splitlocation, i)
+							end
+						end
 						local url = table.concat(split, "/").."/"..filelocation
 						local splitextension = string.split(url, ".")
 						local extension = extensions[splitextension[#splitextension]]
@@ -42,7 +52,17 @@ local function import(name)
 				if index == "load" then
 					return function(filelocation)
 						local split = string.split(url, "/")
-						table.remove(split, 1)
+						table.remove(split, #split)
+						local splitlocation = string.split(filelocation, "/")
+						for i = 1, #splitlocation do
+							local v = splitlocation[#splitlocation]
+							if v == ".." then
+								table.remove(split, #split)
+								table.remove(splitlocation, i)
+							elseif v == "." then
+								table.remove(splitlocation, i)
+							end
+						end
 						local url = table.concat(split, "/").."/"..filelocation
 						local splitextension = string.split(url, ".")
 						local extension = extensions[splitextension[#splitextension]]
