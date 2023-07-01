@@ -3,6 +3,7 @@ local sandboxed_env = getfenv()
 local env = {}
 local tostring
 local terminal
+local extensions
 local io
 local imports = {
 	tpscript = "https://raw.githubusercontent.com/headsmasher8557/tpscript/main/init.lua",
@@ -18,6 +19,17 @@ local function import(name)
 		assert(func, "Import failure: "..(fail or ""))
 		local returned = table.pack(setfenv(func, setmetatable({}, {
 			__index = function(self, index)
+				if index == "load" then
+					return function(filelocation)
+						local split = string.split(url, "/")
+						table.remove(split, 1)
+						local url = table.concat(split, "/")..filelocation
+						local splitextension = string.split(url, ".")
+						local extension = extensions[splitextension[#splitextension]]
+						assert(extension, "Invalid extension or none was provided.")
+						return extension(HttpService:GetAsync(url))
+					end
+				end
 				return rawget(self, index) env[index] or sandboxed_env[index]
 			end,
 			__newindex = rawset
@@ -29,6 +41,17 @@ local function import(name)
 		assert(func, "Import failure: "..(fail or ""))
 		local returned = table.pack(setfenv(func, setmetatable({}, {
 			__index = function(self, index)
+				if index == "load" then
+					return function(filelocation)
+						local split = string.split(url, "/")
+						table.remove(split, 1)
+						local url = table.concat(split, "/")..filelocation
+						local splitextension = string.split(url, ".")
+						local extension = extensions[splitextension[#splitextension]]
+						assert(extension, "Invalid extension or none was provided.")
+						return extension(HttpService:GetAsync(url))
+					end
+				end
 				return rawget(self, index) env[index] or sandboxed_env[index]
 			end,
 			__newindex = rawset
