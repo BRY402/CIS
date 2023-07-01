@@ -215,8 +215,6 @@ local function runcode(code)
 		table.remove(split, 1)
 		code = table.concat(split, ":")
 	end
-	local richCode = code:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\"", "&quot;"):gsub("'", "&apos;")
-	outputmsg("<font color = \"rgb(255, 255, 0)\">"..owner.Name.."/&gt; </font>"..richCode)
 	return exec(code, "Terminal")
 end
 env.defaultRunCode = runcode
