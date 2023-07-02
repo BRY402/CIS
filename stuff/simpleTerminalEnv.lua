@@ -227,9 +227,11 @@ terminal = {
 		tostring = tostring,
 		environmentMetatable = {
 			__index = function(self, index)
-				return rawget(self, index) or sandboxed_env[index]
+				return env[index] or sandboxed_env[index]
 			end,
-			__newindex = rawset
+			__newindex = function(self, index, value)
+				env[index] = value
+			end
 		}
 	}
 }
@@ -284,6 +286,7 @@ function tostring(arg)
 		return terminal.Internal.tostring(arg)
 	end
 end
+env._ENV = env
 local Services = {}
 function Services:GetServices()
 	local ServiceTable = {}
