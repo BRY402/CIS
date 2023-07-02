@@ -107,8 +107,8 @@ local file = {
 			Id = HttpService:GenerateGUID(),
 			Source = source,
 			Name = file_name,
-			Run = function(file, silent)
-				return self:Load(file.Name, silent == nil and true)
+			Run = function(file)
+				return self:Load(file.Name)
 			end
 		}
 		local locked = {
@@ -139,8 +139,8 @@ local file = {
 			end
 			fileData[index] = value
 		end
-		fileMeta.__call = function(self, silent)
-			return fileData.Run(newFile, silent)
+		fileMeta.__call = function(self)
+			return fileData.Run(newFile)
 		end
 		local oldFile = files[file_name]
 		if oldFile then
@@ -171,12 +171,9 @@ local file = {
 	Get = function(self, file_name)
 		return files[file_name]
 	end,
-	Load = function(self, file_name, silent)
+	Load = function(self, file_name)
 		local file = self:Get(file_name)
 		if file then
-			if not silent then
-				terminal.newlog("<font color = \"rgb(0, 255, 255)\">File/&gt; </font>executing file <font color=\"rgb(0, 255, 255)\">"..file.Name.."</font>.", Color3.new(1, 1, 1))
-			end
 			local split = string.split(file.Name, ".")
 			table.remove(split, 1)
 			local fileExtention = split[#split]
