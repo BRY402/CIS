@@ -181,7 +181,6 @@ local file = {
 			table.remove(split, 1)
 			local fileExtention = split[#split]
 			if not fileExtention then
-				terminal.newlog("No file extension found, please input one.")
 				fileExtention = io.read()
 			end
 			local extension = extensions[fileExtention]
