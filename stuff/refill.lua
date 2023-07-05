@@ -23,7 +23,7 @@ local function ondeletion(data)
 		end)
 	end
 end
-function protect(inst: Instance,changelist)
+function protect(inst: Instance, changelist)
 	if inst then
 		local event = lib.Utilities.newEvent("OnDestroy","CallOnDestroy")
 		local oldclone = lib.Clone(inst)
