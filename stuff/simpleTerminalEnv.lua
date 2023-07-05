@@ -227,11 +227,9 @@ terminal = {
 		tostring = tostring,
 		environmentMetatable = {
 			__index = function(self, index)
-				return rawget(self, index) or sandboxed_env[index]
+				return rawget(self, index) or getfenv()[index]
 			end,
-			__newindex = function(self, index, value)
-				sandboxed_env[index] = value
-			end
+			__newindex = rawset
 		}
 	}
 }
