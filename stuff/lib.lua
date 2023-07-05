@@ -457,7 +457,7 @@ lib.Utilities.newMetatable = function(public)
 	end
 	return publicStorage or public
 end
-lib.Utilities.RandomString = function(start, end_, length, seed)
+lib.Utilities.RandomString = function(length, seed, start, end_)
 	local storage = {result = ""}
 	if tonumber(length) and length > 1 then
 		for i = 1, length do
