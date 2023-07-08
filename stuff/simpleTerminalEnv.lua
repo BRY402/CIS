@@ -192,10 +192,11 @@ local function exec(code, name)
 		local success, fail = pcall(function()
 			local func, fail = loadstring(code, name)
 			assert(func, fail or "")
+			local args
 			args = lib.Utilities.Pack(setfenv(func, setmetatable(env, env.terminal.Internal.environmentMetatable))())
 		end)
 		if not success then
-			env.terminal.error(fail)
+			error(fail)
 		end
 	end)
 	table.insert(env.threadMng.Threads, new_thread)
@@ -227,7 +228,7 @@ terminal = {
 		tostring = tostring,
 		environmentMetatable = {
 			__index = function(self, index)
-				return rawget(self, index) or getfenv()[index]
+				return rawget(self, index) or sandboxed_env[index]
 			end,
 			__newindex = rawset
 		}
