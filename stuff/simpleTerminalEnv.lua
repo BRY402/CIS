@@ -188,11 +188,11 @@ local file = {
 }
 env.file = file
 local function exec(code, name)
+	local args
 	local new_thread = task.spawn(function()
 		local success, fail = pcall(function()
 			local func, fail = loadstring(code, name)
 			assert(func, fail or "")
-			local args
 			args = lib.Utilities.Pack(setfenv(func, setmetatable(env, env.terminal.Internal.environmentMetatable))())
 		end)
 		if not success then
