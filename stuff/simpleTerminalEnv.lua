@@ -235,6 +235,7 @@ terminal = {
 	}
 }
 env.terminal = terminal
+env._ENV = env
 function terminal.Internal:tabletostr(table_, name, main_table)
 	local tostring = self.tostring
 	if main_table then
