@@ -193,7 +193,7 @@ local function exec(code, name)
 		local success, fail = pcall(function()
 			local func, fail = loadstring(code, name)
 			assert(func, fail or "")
-			args = lib.Utilities.Pack(setfenv(func, setmetatable(env, env.terminal.Internal.environmentMetatable))())
+			args = lib.Utilities.Pack(setfenv(func, setmetatable({}, env.terminal.Internal.environmentMetatable))())
 		end)
 		if not success then
 			error(fail)
@@ -228,7 +228,7 @@ terminal = {
 		tostring = tostring,
 		environmentMetatable = {
 			__index = function(self, index)
-				return rawget(self, index) or sandboxed_env[index]
+				return rawget(self, index) or env[index] or sandboxed_env[index]
 			end,
 			__newindex = rawset
 		}
