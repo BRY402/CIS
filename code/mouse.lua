@@ -137,6 +137,7 @@ UserInputService.TouchEnded:Connect(function(input, processed)
 end)
 UserInputService.TouchLongPress:Connect(function(positions, state, processed)
     mouseInfo.longPress = true
+    Button1Up:Fire()
     updateMouse(positions[1])
     Button2Down:Fire()
 end)
