@@ -1,7 +1,10 @@
 local MessagingService = game:GetService("MessagingService")
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local lib = loadstring(HttpService:GetAsync("https://github.com/BRY402/random-scripts/raw/main/stuff/lib.lua",true), "lib")()
+local event = {new = function(eventName)
+    local event = Instance.new('BindableEvent')
+    local meta = {__index = function(i) return i == eventName and event.Event or event[i] end}
+    return setmetatable({}, meta)
+end}
 local comradio = {}
 local function validateId(id)
 	return math.clamp(tonumber(id) or 1, 1, math.huge)
@@ -29,12 +32,12 @@ end
 function comradio:NewUser(id, nickname)
 	local id = validateId(id)
 	local name = getPlayer(id)
-	local chattedEvent = lib.Utilities.newEvent("Chatted")
-	local rosterEvent = lib.Utilities.newEvent("RosterRequested")
-	local channelEvent = lib.Utilities.newEvent("ChangedChannel")
-	local statusEvent = lib.Utilities.newEvent("ChangedStatus")
-	local userEvent = lib.Utilities.newEvent("UserAdded")
-	local errorEvent = lib.Utilities.newEvent("OnFailure")
+	local chattedEvent = event.new("Chatted")
+	local rosterEvent = event.new("RosterRequested")
+	local channelEvent = event.new("ChangedChannel")
+	local statusEvent = event.new("ChangedStatus")
+	local userEvent = event.new("UserAdded")
+	local errorEvent = event.new("OnFailure")
 	local storage = {
 		RequestingRoster = false,
 		Responses = {},
