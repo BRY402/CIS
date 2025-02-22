@@ -2,7 +2,7 @@ if task then
     return task
 end
 
-local task = {}
+local task = {levels = {}}
 
 local format = string.format
 local type = type
@@ -16,16 +16,16 @@ local os_clock = os.clock
 
 local scheduler = require('./Scheduler')
 
-scheduler.INIT_LVL = 1
-scheduler.HEARTBEAT_LVL = 2
+task.levels.INIT_LVL = 1
+task.levels.HEARTBEAT_LVL = 2
 
-scheduler.addFloor(scheduler.INIT_LVL) -- Start of cycle
-scheduler.addFloor(scheduler.HEARTBEAT_LVL) -- Heartbeat
+scheduler.addFloor(task.levels.INIT_LVL) -- Start of cycle
+scheduler.addFloor(task.levels.HEARTBEAT_LVL) -- Heartbeat
 
 
 -- Task functions
 function task.wait(duration: number): number
-    scheduler.scheduleTask(coroutine_running(), scheduler.HEARTBEAT_LVL, duration)
+    scheduler.scheduleTask(coroutine_running(), task.levels.HEARTBEAT_LVL, duration)
     local start = os_clock()
     coroutine_yield()
     return os_clock() - start
@@ -48,7 +48,7 @@ function task.defer(functionOrThread: (...any) -> ...any, ...: any)
         error(format('Expected thread, got %s', type(thread)), 2)
     end
 
-    scheduler.scheduleTask(thread, scheduler.INIT_LVL, 0, ...)
+    scheduler.scheduleTask(thread, task.levels.INIT_LVL, 0, ...)
 
     return thread
 end
@@ -60,7 +60,7 @@ function task.delay(duration: number, functionOrThread: (...any) -> ...any | thr
         error(format('Expected thread, got %s', type(thread)), 2)
     end
 
-    scheduler.scheduleTask(thread, scheduler.HEARTBEAT_LVL, duration, ...)
+    scheduler.scheduleTask(thread, task.levels.HEARTBEAT_LVL, duration, ...)
 
     return thread
 end
@@ -70,12 +70,12 @@ function task.cancel(thread: thread): nil
     return nil
 end
 
-function task.run(functionOrThread: (...any) -> ...any | thread): nil
+function task.run(functionOrThread: ((...any) -> ...any | thread)?): nil
     if functionOrThread then
         task.spawn(functionOrThread)
     end
     while true do
-        local finishedlevels = 0
+        local finishedfloors = 0
         for i, floor in ipairs(scheduler.tasks) do
             if floor.n <= 0 then
                 finishedfloors = finishedfloors + 1
